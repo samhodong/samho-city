@@ -420,6 +420,15 @@ body.building #bubbles, body.photo #bubbles, body:not(.playing) #bubbles { displ
 .bub i::after { content: ''; position: absolute; left: 50%; bottom: -6px; width: 10px; height: 10px; background: #fff; transform: translateX(-50%) rotate(45deg); border-radius: 0 0 3px 0; box-shadow: 2px 2px 3px rgba(20, 30, 28, .1); }
 .bub.gift i { background: #fff6da; box-shadow: 0 3px 12px rgba(201, 150, 42, .45), 0 0 0 2px var(--gold, #c9962a); animation: bubIn .4s cubic-bezier(.2, 1.7, .4, 1), bubWig .9s ease-in-out .4s infinite; }
 .bub.gift i::after { background: #fff6da; }
+.bub.cat i { background: #fff0f4; box-shadow: 0 3px 12px rgba(226, 99, 122, .4), 0 0 0 2px #f4a9bf; animation: bubIn .4s cubic-bezier(.2, 1.7, .4, 1), bubWig 1.1s ease-in-out .4s infinite; }
+.bub.cat i::after { background: #fff0f4; }
+.rankline { margin: 10px 0 8px; font-size: 12.5px; line-height: 1.5; padding: 8px 12px; border-radius: 12px; background: var(--hair-2); }
+.rankline b { color: var(--accent); }
+.cathead { margin: 16px 0 8px; font-size: 14px; display: flex; align-items: baseline; gap: 8px; }
+.cathead span { font-size: 12px; color: var(--muted); font-weight: 500; font-variant-numeric: tabular-nums; }
+.stamps.cats { grid-template-columns: repeat(3, 1fr); }
+.stamps.cats .stamp.on { border-color: #f4a9bf; background: #fff5f8; }
+.stamps.cats .stamp.on i { box-shadow: inset 0 0 0 2px #f4a9bf, 0 2px 6px rgba(226, 99, 122, .25); transform: rotate(6deg); }
 .bub.pop i { animation: bubPop .3s ease-out forwards; }
 .bub.bye i { opacity: 0; transition: opacity .35s; }
 @keyframes bubIn { from { transform: scale(0); } to { transform: scale(1); } }
@@ -555,7 +564,8 @@ body.building #bubbles, body.photo #bubbles, body:not(.playing) #bubbles { displ
         <h3>설정</h3>
         <label class="switch"><input type="checkbox" id="optCycle"><span>낮과 밤<small>끄면 늘 한낮이에요</small></span></label>
         <label class="switch"><input type="checkbox" id="optFx"><span>고급 그래픽<small>빛 번짐·미니어처 효과·색보정. 느리면 꺼 두세요</small></span></label>
-        <label class="switch"><input type="checkbox" id="optBub"><span>주민 말풍선<small>건물 위 말풍선과 선물 상자</small></span></label>
+        <label class="switch"><input type="checkbox" id="optPastel"><span>파스텔 그림체<small>알록달록 귀여운 색감과 뭉게구름·꽃밭. 다시 열면 바뀌어요</small></span></label>
+        <label class="switch"><input type="checkbox" id="optBub"><span>주민 말풍선<small>건물 위 말풍선, 선물 상자, 길고양이</small></span></label>
         <label class="switch"><input type="checkbox" id="optSnd"><span>소리<small>짓는 소리, 축하 음, 빗소리</small></span></label>
         <label class="switch"><input type="checkbox" id="optDis"><span>날씨·재난<small>비·눈, 벚꽃잎·낙엽, 태풍 침수, 화재</small></span></label>
         <label class="switch"><input type="checkbox" id="optShadow"><span>그림자<small>느린 기기에서는 꺼 두세요</small></span></label>
@@ -736,14 +746,15 @@ function freshState(mode) {
   welInit(mode);
   Object.assign(S, {
     v: 2, mode, money: { empty: 15000, village: 20000, real: 30000 }[mode], year: 2026, month: 10, day: 0, tax: 9, speed: 1, happy: 60,
-    unlocked: {}, crowSeason: -1, blossomYear: 0, msgCool: 2, milestones: {}, mi: 0, built: { road: 0, south: 0, redev: 0, park: 0 }, stamps: {}, heard: 0, gifts: 0, photoN: 0, festYear: 0, fastFire: 0,
+    unlocked: {}, crowSeason: -1, blossomYear: 0, msgCool: 2, milestones: {}, mi: 0, built: { road: 0, south: 0, redev: 0, park: 0 }, stamps: {}, heard: 0, gifts: 0, photoN: 0, festYear: 0, fastFire: 0, cats: {}, rainbows: 0, rank: null, rankMax: null, rankUp: 0,
     hist: [], jam0: 0, pop0: 0, goods0: 0, lastNet: 0, ledger: null, usedGood: [],
     pop: 0, jobsC: 0, jobsI: 0, jobsS: 0, dR: 1, dC: -.5, dI: 1, goods: 0, jam: 0, southPop: 0, emptyZones: [0, 0, 0],
     pol: {}, wx: { k: 'clear', d: 0 }, wxDays: { rain: 0, snow: 0 }, evt: [], news: [], newsNo: 0, newsUnread: 0, fires: [], flood: [], disCost: 0, typhoonYear: 0,
   });
 }
 freshState('real');
-const SET = Object.assign({ cycle: true, shadow: true, mini: true, confirm: true, fx: true, dis: true, snd: true, bub: true }, (() => { try { return JSON.parse(localStorage.getItem('samho-city-settings') || '{}'); } catch (e) { return {}; } })());
+const SET = Object.assign({ cycle: true, shadow: true, mini: true, confirm: true, fx: true, dis: true, snd: true, bub: true, pastel: true }, (() => { try { return JSON.parse(localStorage.getItem('samho-city-settings') || '{}'); } catch (e) { return {}; } })());
+const CUTE = SET.pastel !== false, WATER_DAY = CUTE ? 0x6fc6ea : 0x7ea7c0;
 function saveSettings() { try { localStorage.setItem('samho-city-settings', JSON.stringify(SET)); } catch (e) {} }
 let tool = T.look, catSel = 'look', overlay = 0, started = false, BULK = false;
 const lastToolOfCat = {};
@@ -863,7 +874,7 @@ const skyDome = new THREE.Mesh(new THREE.SphereGeometry(1400, 32, 16), new THREE
 }));
 skyDome.renderOrder = -10; skyDome.frustumCulled = false; scene.add(skyDome);
 const GRADE = {
-  uniforms: { tDiffuse: { value: null }, uSat: { value: 1.08 }, uCon: { value: 1.06 }, uVig: { value: .55 }, uWarm: { value: 1 }, uNight: { value: 0 } },
+  uniforms: { tDiffuse: { value: null }, uSat: { value: CUTE ? 1.2 : 1.08 }, uCon: { value: CUTE ? 1.03 : 1.06 }, uVig: { value: CUTE ? .34 : .55 }, uWarm: { value: 1 }, uNight: { value: 0 } },
   vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
   fragmentShader: `uniform sampler2D tDiffuse; uniform float uSat; uniform float uCon; uniform float uVig; uniform float uWarm; uniform float uNight; varying vec2 vUv;
     void main(){
@@ -943,7 +954,7 @@ const waterNormal = (function () { // 겹친 물결로 만든 이음새 없는 �
   }
   g.putImageData(im, 0, 0); const t = new THREE.CanvasTexture(cv); t.wrapS = t.wrapT = THREE.RepeatWrapping; return t;
 })();
-const waterMat = new THREE.MeshPhongMaterial({ color: 0x7ea7c0, specular: 0xf4f0e6, shininess: 140, normalMap: waterNormal, normalScale: new THREE.Vector2(.3, .3) });
+const waterMat = new THREE.MeshPhongMaterial({ color: WATER_DAY, specular: 0xf4f0e6, shininess: 140, normalMap: waterNormal, normalScale: new THREE.Vector2(.3, .3) });
 let waterMesh = null;
 function rebuildWater() {
   if (waterMesh) { scene.remove(waterMesh); waterMesh.geometry.dispose(); }
@@ -1020,7 +1031,7 @@ const MB = { mesh: makeInst(boxGeo, bodyMat, NI * KB, true, true), K: KB, lo: In
 const MP = { mesh: makeInst(boxGeo, plainMat, NI * KP, true, true), K: KP, lo: Infinity, hi: -1 };
 const MR = { mesh: makeInst(roofGeo, roofMat, NI * KR, true, true), K: KR, lo: Infinity, hi: -1 };
 const decorMesh = makeInst(boxGeo, bodyMat, 2600, true, true);
-const crownGeo = new THREE.IcosahedronGeometry(1, 0); crownGeo.translate(0, 1, 0);
+const crownGeo = new THREE.IcosahedronGeometry(1, CUTE ? 1 : 0); crownGeo.translate(0, 1, 0);
 const crownMesh = makeInst(crownGeo, new THREE.MeshLambertMaterial({ color: 0xffffff }), 6500, true, false);
 const trunkMesh = makeInst(boxGeo, new THREE.MeshLambertMaterial({ color: 0x7a6a5c }), 6500, false, false);
 const pvGeo = new THREE.PlaneGeometry(.94, .94); pvGeo.rotateX(-Math.PI / 2);
@@ -1105,6 +1116,12 @@ const ROADSTYLE = {
   l: { asph: '#c7c8c6', curb: '#eeece8', walk: '#e2dfd8', joint: 'rgba(60,55,45,.04)', mark: 'rgba(255,255,255,.6)', zebra: 'rgba(255,255,255,.6)', w: 60, ave: false },
   a: { asph: '#bdbebd', curb: '#efede9', walk: '#e0ddd6', joint: 'rgba(60,55,45,.04)', mark: 'rgba(255,255,255,.65)', zebra: 'rgba(255,255,255,.65)', yellow: 'rgba(226,196,120,.75)', w: 102, ave: true },
 };
+if (CUTE) {
+  Object.assign(ROADSTYLE.L, { asph: '#9a9db2', curb: '#fffaf2', walk: '#f3e7d6' });
+  Object.assign(ROADSTYLE.A, { asph: '#868aa2', curb: '#fffaf2', walk: '#f0e3d0', yellow: '#ffd35c' });
+  Object.assign(ROADSTYLE.l, { asph: '#d3d3de', walk: '#efe9de' });
+  Object.assign(ROADSTYLE.a, { asph: '#c9c9d6', walk: '#ece6da' });
+}
 const ARMS = { iso: [], end: ['N'], str: ['N', 'S'], brg: ['N', 'S'], cor: ['N', 'E'], tee: ['N', 'E', 'S'], x: ['N', 'E', 'S', 'W'] };
 const ARM_ROT = { N: 0, E: Math.PI / 2, S: Math.PI, W: -Math.PI / 2 };
 function seeded(n) { let s = n * 9301 + 49297; return () => { s = (s * 9301 + 49297) % 233280; return s / 233280; }; }
@@ -1298,6 +1315,11 @@ const C = {
   walk: '#dad6cd', walkOut: '#d9d6cf', road: '#6a6f73', roadOut: '#bcbdbb', ave: '#5c6165', aveOut: '#b3b4b2', mark: 'rgba(236,224,186,.85)',
   rz: '#ecdcd1', cz: '#d9e1e8', iz: '#e7dfc9', serv: '#dbe6df', lot: '#e3ddd2', rzE: '#c47a62', czE: '#4f7ea6', izE: '#a4883f', grid: 'rgba(70,80,70,.055)',
 };
+if (CUTE) Object.assign(C, {
+  land: '#f1e5c6', landOut: '#e6e9d2', water: '#8fd3f0', forest: '#bfe6a4', forestOut: '#d5ebc7', park: '#b2e894',
+  walk: '#eadfc8', walkOut: '#e4e2d2', road: '#9a9db2', roadOut: '#cfcfd9', ave: '#868aa2', aveOut: '#c5c5d2',
+  rz: '#ffe7dc', cz: '#dcedfb', iz: '#fcf1cd', serv: '#dff5e7', lot: '#ecdfc4', rzE: '#f08a7b', czE: '#5fa8e0', izE: '#e9b83f',
+});
 function heat(t) {
   t = clamp(t, 0, 1);
   const a = t < .5 ? [58, 165, 138] : [230, 184, 76], b = t < .5 ? [230, 184, 76] : [207, 80, 64], k = t < .5 ? t * 2 : (t - .5) * 2;
@@ -1389,6 +1411,13 @@ const PAL = {
   com: [0xcdd6dc, 0xbac6cf, 0xaab8c2, 0xd6dde1], tower: [0x9fb0bd, 0x8fa3b2, 0xb3c0c9],
   awning: [0x6f8f87, 0x8e6f62, 0x5f7690, 0xa48c62], ind: [0xd5cfc2, 0xc9c2b2, 0xbdb6a5], decor: [0xedeae4, 0xe6e2db, 0xf0ede8],
 };
+if (CUTE) Object.assign(PAL, {
+  house: [0xfff6e8, 0xffeedd, 0xfdf3f0, 0xf3f7ea], roof: [0xf08a7b, 0x7fb8e0, 0x7fcfae, 0xf5c95e, 0xb39ddb],
+  villa: [0xfbdcc4, 0xfff0df, 0xe3f1dc, 0xd9ecf5], apt: [0xfffaf2, 0xf6f4ff, 0xf0f8fb, 0xfdf2ee],
+  stripe: [0xf29c8e, 0x82b6e6, 0x8fd1a8, 0xf3c766], shop: [0xfff4e4, 0xfde8e0, 0xe8f3fa],
+  com: [0xcfe6f5, 0xbcd9ee, 0xe3f0f8, 0xe6e2f5], tower: [0xa9cbe6, 0x9fc0e6, 0xc3d6f0],
+  awning: [0x4fbf9a, 0xf0766a, 0x4fa8d8, 0xf5b83d], ind: [0xfaf0dc, 0xf0e8d2, 0xe6f0ee], decor: [0xfbf6ee, 0xf6f0ea, 0xf3f6f8],
+});
 const fh = (f) => f * .14 + .03;
 const PB = [], PP = [], PR = [];
 function pc(arr, x, z, y, w, d, h, c, r) { arr.push({ x, z, y, w, d, h, c, r: r || 0 }); }
@@ -1466,6 +1495,10 @@ function genPieces(i) {
 const KF = .14;
 const K = { WHITE: 0xf4f2ed, GLASS: 0x55626c, DARK: 0x6b6d6c, ROOF: 0xd2cdc3, GREEN: 0x9fb5a3, TANK: 0x9cbcae, RAIL: 0xebe8e1, STEEL: 0x9aa1a5, WALL: 0xd0cabf, STONE: 0xcbc5ba, PAVE: 0xb9b6ae };
 const SIGNS = [0xb9614d, 0x3d6f88, 0xcda04f, 0x4b7d6b, 0xe6e0d4, 0x8c4f58, 0x5b6f9a];
+if (CUTE) {
+  Object.assign(K, { WHITE: 0xfffdf7, ROOF: 0xf1e6da, GREEN: 0x9fdcb8, TANK: 0x9fd6e0, RAIL: 0xfffaf2, WALL: 0xf2e6d6, STONE: 0xeadfd0, PAVE: 0xe9dfd0 });
+  SIGNS.splice(0, SIGNS.length, 0xf0766a, 0x4fa8d8, 0xf5b83d, 0x4fbf9a, 0xfff6e6, 0xee6f93, 0x8f82d6);
+}
 function hexRGB(h) { return [((h >> 16) & 255) / 255, ((h >> 8) & 255) / 255, (h & 255) / 255]; }
 function Kit() { this.parts = []; }
 Kit.prototype.add = function (geo, col, tint, win) {
@@ -2011,6 +2044,20 @@ const KITPAL = {
   ind: [0xd8d2c5, 0xcac4b6, 0xe0dcd3, 0xbfb8a8, 0xd2d6d6],
   indRoof: [0x5b7fa0, 0x6d9184, 0xa45f4f, 0x8a9198, 0x7b8a6f, 0x4f7591],
 };
+if (CUTE) Object.assign(KITPAL, {
+  house: [0xfff6e8, 0xffeedd, 0xfdf3f0, 0xf3f7ea, 0xeef6fb, 0xfff1d6],
+  houseRoof: [0xf08a7b, 0x7fb8e0, 0x7fcfae, 0xf5c95e, 0xb39ddb, 0xf2a0b5],
+  villa: [0xf7c9b6, 0xfbdcc4, 0xfff0df, 0xd9ecf5, 0xe3f1dc, 0xf6e3f0, 0xffe7b8],
+  villaAcc: [0xffffff, 0x8f8aa8, 0xe98c7b, 0x6fa3c8],
+  apt: [0xfffaf2, 0xf6f4ff, 0xf0f8fb, 0xfdf2ee, 0xf4faef],
+  aptAcc: [0xf29c8e, 0x82b6e6, 0x8fd1a8, 0xf3c766, 0xb7a3e0, 0x6fc9c2],
+  shop: [0xfff4e4, 0xfde8e0, 0xe8f3fa, 0xf9e5c8, 0xeaf5e6, 0xf5e9f7],
+  shopAcc: [0x4fa8d8, 0xf0766a, 0x4fbf9a, 0xf5b83d, 0x9a82d6, 0xee6f93],
+  office: [0xcfe6f5, 0xbcd9ee, 0xe3f0f8, 0xa9cbe6, 0xe6e2f5],
+  officeAcc: [0x4fc3a5, 0x6fa8e0, 0xffffff, 0x8f9fd0],
+  ind: [0xfaf0dc, 0xf0e8d2, 0xfff6e6, 0xe9e2c8, 0xe6f0ee],
+  indRoof: [0x6fa8dc, 0x7fcfae, 0xf08a7b, 0xa9b4d6, 0x9fcf7f, 0xf5c95e],
+});
 const PFG = {}; // 프리팹 키 → 지오메트리(처음 쓸 때 만들어요)
 function pfGeo(key) { if (!PFG[key]) { PFG[key] = KITS[key]().build(); PFG[key].__k = key; } return PFG[key]; }
 
@@ -2192,6 +2239,14 @@ const RBPAL = {
   p: [0xefe8dc, 0xe6e1d6, 0xf1ece2, 0xe2e6e8], o: [0xd8d2c5, 0xcac4b6, 0xe0dcd3], x: [0xe2ddd4, 0xd8d3ca, 0xe9e4dc, 0xd0cbc2],
 };
 const RBROOF = [K.GREEN, K.ROOF, 0xa9705c, 0x8a96a0, K.ROOF, 0x7c8b7d];
+if (CUTE) {
+  Object.assign(RBPAL, {
+    h: [0xfff6e8, 0xffeedd, 0xfdf3f0, 0xf3f7ea, 0xeef6fb, 0xffe2cf, 0xfff1d6], u: [0xf7c9b6, 0xfbdcc4, 0xfff0df, 0xd9ecf5, 0xe3f1dc, 0xf6e3f0],
+    a: [0xfffaf2, 0xf6f4ff, 0xf0f8fb, 0xfdf2ee], c: [0xfff4e4, 0xfde8e0, 0xe8f3fa, 0xf9e5c8, 0xeaf5e6, 0xcfe6f5],
+    p: [0xfff3e0, 0xf3f0fb, 0xfdf6ea, 0xe6f2f8], o: [0xfaf0dc, 0xf0e8d2, 0xe6f0ee], x: [0xf6efe4, 0xefe9e0, 0xf8f3ea, 0xe9e6ee],
+  });
+  RBROOF.splice(0, RBROOF.length, 0x8fd6b4, 0xf7b7a3, 0xf08a7b, 0x8fc1e8, 0xf5cf74, 0xc2aee6, 0xf4a9bf, 0xf1e6da);
+}
 function mixHex(a, b, t) { const A = hexRGB(a), B = hexRGB(b); return (Math.round((A[0] + (B[0] - A[0]) * t) * 255) << 16) | (Math.round((A[1] + (B[1] - A[1]) * t) * 255) << 8) | Math.round((A[2] + (B[2] - A[2]) * t) * 255); }
 function rbParts(b) {
   if (b.parts) return b.parts;
@@ -2392,6 +2447,13 @@ function rebuildDecor() {
 
 /* 나무와 계절 */
 function seasonPalette(m) {
+  if (CUTE) {
+    if (m >= 3 && m <= 5) return [0xa8e08a, 0xbfe89a, 0x93d67c];
+    if (m >= 6 && m <= 8) return [0x6fc46a, 0x84d27a, 0x5cb65c];
+    if (m === 9) return [0x84d27a, 0xa6d66c, 0xc3d868];
+    if (m === 10 || m === 11) return [0xf5a742, 0xf7c352, 0xee7d4a, 0xb9d066, 0xf29a5e];
+    return [0xcfdcd2, 0x9fc4a4, 0xb5cfb4, 0xe6ece6];
+  }
   if (m >= 3 && m <= 5) return [0x9dbb7c, 0xa9c486, 0x8fb070];
   if (m >= 6 && m <= 8) return [0x6f9a5b, 0x7ea866, 0x5f8c50];
   if (m === 9) return [0x7ea866, 0x8fa860, 0x9aa35b];
@@ -2416,7 +2478,8 @@ function rebuildTrees() {
   let n = 0;
   const put = (x, z, s, col) => {
     if (n >= crownMesh.instanceMatrix.count) return;
-    dummy.position.set(x, .07, z); dummy.rotation.set(0, s * 40, 0); dummy.scale.set(s, s * 1.15, s); dummy.updateMatrix();
+    if (CUTE) s *= 1.16;
+    dummy.position.set(x, .07, z); dummy.rotation.set(0, s * 40, 0); dummy.scale.set(s, s * (CUTE ? 1.02 : 1.15), s); dummy.updateMatrix();
     crownMesh.setMatrixAt(n, dummy.matrix); crownMesh.setColorAt(n, tmpC.setHex(col));
     dummy.position.set(x, 0, z); dummy.rotation.set(0, 0, 0); dummy.scale.set(.035, .1, .035); dummy.updateMatrix(); trunkMesh.setMatrixAt(n, dummy.matrix);
     n++;
@@ -2442,12 +2505,12 @@ function rebuildTrees() {
   }
   for (const [x, z, i] of cherry) {
     if (type[i] !== WATER) continue;
-    const col = blossom ? pick([0xf3c9d2, 0xedb6c3, 0xf7d9df], hash(i)) : bare ? 0x8a7d70 : pick(pal, hash(i + 5));
+    const col = blossom ? pick(CUTE ? [0xffc2d4, 0xffa9c2, 0xffd9e4] : [0xf3c9d2, 0xedb6c3, 0xf7d9df], hash(i)) : bare ? 0x8a7d70 : pick(pal, hash(i + 5));
     put(x, z, .14, col);
   }
   crownMesh.count = trunkMesh.count = n;
   crownMesh.instanceMatrix.needsUpdate = true; crownMesh.instanceColor.needsUpdate = true; trunkMesh.instanceMatrix.needsUpdate = true;
-  treesDirty = false; treeSeason = String(S.month);
+  treesDirty = false; treeSeason = String(S.month); rebuildFlowers();
 }
 
 /* ───────── 도로망 ───────── */
@@ -3315,6 +3378,7 @@ const BUB = {
   bench: ['🪑', ['공감벤치에서 이웃이랑 한참 얘기했어요.']],
   ferris: ['🎡', ['대관람차 타러 가요!', '꼭대기에서 태화강이 다 보여요.']],
   gift: ['🎁', ['']],
+  cat: ['🐱', ['야옹~']],
 };
 const bubs = []; let bubTimer = 3, giftTimer = 40;
 function bubKindFor(i) {
@@ -3347,6 +3411,7 @@ function addBubble(i, kind) {
 }
 function tapBubble(b) {
   if (b.done) return; b.done = true; b.life = Math.min(b.life, .35); b.el.classList.add('pop');
+  if (b.kind === 'cat') { catFound(b); return; }
   if (b.kind === 'gift') {
     const r = Math.round(20 + Math.min(180, (S.pop || 0) * .004)); S.money += r; S.gifts = (S.gifts || 0) + 1;
     puff(b.i, true); notify(`주민이 감사 선물을 보냈어요. 동네 살림에 ${won(r)} 원이 보태졌어요.`, 'gold'); updateHUD(); checkStamps();
@@ -3377,6 +3442,191 @@ function stepBubbles(dt) {
   }
 }
 
+/* ───────── v22: 뭉게구름 — 동네 위를 천천히 흘러가요 ───────── */
+const cloudGeo = (() => { const P = [], Nn = [];
+  [[0, 0, 0, 1], [.92, -.1, .1, .72], [-.86, -.12, -.05, .66], [.36, .26, -.28, .6], [-.3, .04, .46, .56]].forEach(([x, y, z, r]) => { const s = new THREE.IcosahedronGeometry(r, 2); s.scale(1, .66, 1); s.translate(x, y + .7, z); const q = s.index ? s.toNonIndexed() : s; P.push(...q.attributes.position.array); Nn.push(...q.attributes.normal.array); });
+  const o = new THREE.BufferGeometry(); o.setAttribute('position', new THREE.Float32BufferAttribute(P, 3)); o.setAttribute('normal', new THREE.Float32BufferAttribute(Nn, 3)); return o; })();
+const CLOUD_N = 12;
+const cloudMesh = makeInst(cloudGeo, new THREE.MeshLambertMaterial({ color: 0xffffff, emissive: 0x8e98a6, transparent: true, opacity: .95, fog: false }), CLOUD_N, false, false);
+const cloudShade = makeInst(blobGeo, new THREE.MeshBasicMaterial({ color: 0x1c2a33, map: glowTex, transparent: true, opacity: .16, depthWrite: false }), CLOUD_N, false, false);
+cloudShade.renderOrder = 2;
+const CLOUDS = []; for (let q = 0; q < CLOUD_N; q++) CLOUDS.push({ x: hash(q * 17 + 3) * (W + 50), z: -6 + hash(q * 29 + 7) * (H + 12), y: 6.2 + hash(q * 5 + 1) * 3.4, s: 1.25 + hash(q * 11 + 9) * 1.5, sp: .1 + hash(q * 7 + 2) * .12, r: hash(q * 3) * 6.28 });
+let cloudK = 0;
+function stepClouds(dt, t) {
+  const want = clamp((cam.dist - 15) / 12, 0, 1) * (SET.pastel === false || document.body.classList.contains('building') ? 0 : 1);
+  cloudK += (want - cloudK) * Math.min(1, dt * 3);
+  if (cloudK < .02) { cloudMesh.count = cloudShade.count = 0; return; }
+  const wet = clamp(wxK, 0, 1), day = 1 - nightK * .7, g = day * (1 - wet * .16);
+  cloudMesh.material.emissive.setRGB(.36 * g, .39 * g, .45 * g);
+  let n = 0; const zs = cam.dist / 34, B = cam.dist * .6 + 4, md = (v) => ((v % (2 * B)) + 2 * B) % (2 * B) - B;
+  for (const c of CLOUDS) {
+    c.x += dt * c.sp * (1 + wet) * zs;
+    const x = cam.tx + md(c.x * zs - cam.tx), z = cam.tz + md(c.z * zs * 1.7 - cam.tz), y = (c.y * .36 + Math.sin(t / 5000 + c.r) * .08) * zs, s = c.s * .3 * zs * cloudK * (1 + wet * .2);
+    dummy.position.set(x, y, z); dummy.rotation.set(0, c.r, 0); dummy.scale.set(s, s * .9, s); dummy.updateMatrix();
+    cloudMesh.setMatrixAt(n, dummy.matrix); cloudMesh.setColorAt(n, tmpC.setRGB(g, g, g * (1 + nightK * .08)));
+    dummy.position.set(x + 1.2 * zs, .035, z + .8 * zs); dummy.rotation.set(0, 0, 0); dummy.scale.set(s * 4.2, 1, s * 3); dummy.updateMatrix();
+    cloudShade.setMatrixAt(n, dummy.matrix); n++;
+  }
+  cloudMesh.count = cloudShade.count = n;
+  cloudMesh.instanceMatrix.needsUpdate = true; cloudMesh.instanceColor.needsUpdate = true; cloudShade.instanceMatrix.needsUpdate = true;
+  cloudShade.material.opacity = .16 * (1 - nightK * .8);
+}
+
+/* ───────── v22: 비 갠 뒤 무지개 ───────── */
+const rainbow = new THREE.Mesh(new THREE.RingGeometry(8, 9.7, 72, 1, 0, Math.PI), new THREE.ShaderMaterial({
+  transparent: true, depthWrite: false, side: THREE.DoubleSide, fog: false, uniforms: { uOp: { value: 0 } },
+  vertexShader: 'varying vec2 vP; void main(){ vP = position.xy; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+  fragmentShader: `uniform float uOp; varying vec2 vP;
+    vec3 hue(float h){ return clamp(abs(mod(h * 6.0 + vec3(0.0, 4.0, 2.0), 6.0) - 3.0) - 1.0, 0.0, 1.0); }
+    void main(){ float t = (length(vP) - 8.0) / 1.7; float b = floor(t * 7.0) / 7.0;
+      vec3 c = mix(vec3(1.0), hue(0.78 - b * 0.78), 0.72);
+      float a = uOp * smoothstep(0.0, 0.1, t) * (1.0 - smoothstep(0.9, 1.0, t)) * smoothstep(0.2, 2.6, vP.y) * 0.62;
+      gl_FragColor = vec4(c, a); }`,
+}));
+rainbow.visible = false; rainbow.frustumCulled = false; rainbow.renderOrder = 5; scene.add(rainbow);
+let rbT = 0, rbPrev = 'clear';
+const RB_LEN = 42;
+function showRainbow() {
+  const asp = canvas.clientWidth / Math.max(1, canvas.clientHeight), sc = clamp(cam.dist / 34 * clamp(asp, .45, 1.3) * .8, .25, 3.2), d = cam.dist * .1 + .5;
+  rainbow.position.set(cam.tx - Math.sin(cam.yaw) * d, -.4, cam.tz - Math.cos(cam.yaw) * d);
+  rainbow.rotation.set(0, cam.yaw, 0); rainbow.scale.setScalar(sc); rbT = RB_LEN;
+}
+function stepRainbow(dt) {
+  const k = S.wx ? S.wx.k : 'clear';
+  if (started && SET.dis !== false && (rbPrev === 'rain' || rbPrev === 'typhoon') && k === 'clear' && hour > 7.5 && hour < 17.5) {
+    showRainbow(); S.rainbows = (S.rainbows || 0) + 1;
+    notify('🌈 비가 그치고 무지개가 떴어요!', 'say'); tone(660, .16, { to: 990, vol: .06, type: 'sine' }); checkStamps();
+  }
+  rbPrev = k;
+  if (rbT > 0) { rbT -= dt; rainbow.visible = true; rainbow.material.uniforms.uOp.value = clamp(Math.min(rbT / 5, (RB_LEN - rbT) / 4), 0, 1) * (1 - nightK); }
+  else if (rainbow.visible) rainbow.visible = false;
+}
+
+/* ───────── v22: 공원 꽃밭 ───────── */
+const flowerGeo = new THREE.IcosahedronGeometry(1, 0);
+const flowerMesh = makeInst(flowerGeo, new THREE.MeshLambertMaterial({ color: 0xffffff }), 4200, false, false);
+function rebuildFlowers() {
+  const m = S.month; let n = 0;
+  const pal = m >= 3 && m <= 5 ? [0xffb3c7, 0xfff0a8, 0xffffff, 0xd9b8ff, 0xff9aa8] : m >= 6 && m <= 8 ? [0xffd24d, 0xff8fa3, 0xffffff, 0x9fd0ff, 0xffa64d] : m >= 9 && m <= 10 ? [0xf7a8d0, 0xffffff, 0xd9a8f0, 0xffc76b] : null;
+  if (pal && SET.pastel !== false) for (const i of insideList) {
+    if (type[i] !== PARK) continue;
+    const x = i % W + .5, z = ((i / W) | 0) + .5;
+    for (let q = 0; q < 6 && n < 4200; q++) {
+      const fx = x + (hash(i * 7 + q * 13) - .5) * .86, fz = z + (hash(i * 11 + q * 17) - .5) * .86, s = .022 + hash(i + q * 5) * .014;
+      dummy.position.set(fx, .028, fz); dummy.rotation.set(0, 0, 0); dummy.scale.set(s, s * .8, s); dummy.updateMatrix();
+      flowerMesh.setMatrixAt(n, dummy.matrix); flowerMesh.setColorAt(n, tmpC.setHex(pick(pal, hash(i * 3 + q)))); n++;
+    }
+  }
+  flowerMesh.count = n; flowerMesh.instanceMatrix.needsUpdate = true; if (flowerMesh.instanceColor) flowerMesh.instanceColor.needsUpdate = true;
+}
+
+/* ───────── v22: 돛단배 — 태화강 넓은 물 위를 둥실둥실 ───────── */
+const boatGeo = (() => { const k = new Kit();
+  k.add((() => { const sh = new THREE.Shape(); sh.moveTo(-.55, .2); sh.lineTo(.64, .2); sh.lineTo(.4, 0); sh.lineTo(-.42, 0); sh.lineTo(-.55, .2); const g = new THREE.ExtrudeGeometry(sh, { depth: .42, bevelEnabled: false, steps: 1 }); g.translate(0, 0, -.21); return g; })(), 0xfffaf0, 0, 0);
+  k.box(1.0, .045, .44, .03, .2, 0, 0, 1, 0);
+  k.cyl(.022, .98, 0, .24, 0, 0x8a6a4c, 0, 5);
+  k.add((() => { const sh = new THREE.Shape(); sh.moveTo(0, 0); sh.lineTo(.52, 0); sh.lineTo(0, .8); sh.lineTo(0, 0); const g = new THREE.ExtrudeGeometry(sh, { depth: .024, bevelEnabled: false, steps: 1 }); g.translate(.045, .36, -.012); return g; })(), 0, 1, 0);
+  k.add((() => { const sh = new THREE.Shape(); sh.moveTo(0, 0); sh.lineTo(-.36, 0); sh.lineTo(0, .6); sh.lineTo(0, 0); const g = new THREE.ExtrudeGeometry(sh, { depth: .024, bevelEnabled: false, steps: 1 }); g.translate(-.045, .36, -.012); return g; })(), 0xffffff, 0, 0);
+  return k.build(); })();
+const boatMesh = makeInst(boatGeo, kitMat, 8, true, false);
+const BOAT_COL = [0xf08a7b, 0x7fb8e0, 0xf5c95e, 0x8fd6b4, 0xc2aee6, 0xf4a9bf];
+let boatHomes = null;
+function findBoatHomes() {
+  boatHomes = [];
+  const ok = (i) => { const x = i % W, y = (i / W) | 0; if (x < 3 || y < 3 || x > W - 4 || y > H - 4) return false; for (let dy = -1; dy <= 1; dy++) for (let dx = -2; dx <= 2; dx++) if (type[(y + dy) * W + x + dx] !== WATER) return false; return true; };
+  const cand = []; for (let i = 0; i < N; i++) if (type[i] === WATER && ok(i)) cand.push(i);
+  for (let tr = 0; tr < 500 && boatHomes.length < 6 && cand.length; tr++) {
+    const i = cand[(hash(tr * 19 + 11) * cand.length) | 0], x = i % W + .5, z = ((i / W) | 0) + .5;
+    if (boatHomes.every((h) => Math.hypot(h.x - x, h.z - z) > 9)) boatHomes.push({ x, z, ph: hash(i + 5) * 6.28, dir: hash(i + 2) < .5 ? 1 : -1, col: BOAT_COL[boatHomes.length % BOAT_COL.length] });
+  }
+}
+function stepBoats(t) {
+  if (!boatHomes) findBoatHomes();
+  let n = 0; const s = t / 1000;
+  for (const h of boatHomes) {
+    const a = s * .06 * h.dir + h.ph, x = h.x + Math.cos(a) * 1.55, z = h.z + Math.sin(a) * .62;
+    dummy.position.set(x, .004 + Math.sin(s * 1.6 + h.ph) * .008, z); dummy.rotation.set(Math.sin(s * 1.3 + h.ph) * .06, -a - h.dir * Math.PI / 2, Math.sin(s * 1.6 + h.ph) * .04); dummy.scale.setScalar(.34); dummy.updateMatrix();
+    boatMesh.setMatrixAt(n, dummy.matrix); boatMesh.setColorAt(n, tmpC.setHex(h.col)); n++;
+  }
+  boatMesh.count = n; boatMesh.instanceMatrix.needsUpdate = true; if (boatMesh.instanceColor) boatMesh.instanceColor.needsUpdate = true;
+}
+
+/* ───────── v22: 길고양이 도감 — 동네 곳곳에 숨은 고양이를 찾아 친해져요 ───────── */
+const CATS22 = [
+  { id: 'cheese', e: '🐱', n: '치즈', where: '공원 잔디밭', d: '햇볕 좋은 잔디밭에서 낮잠 자는 걸 좋아해요.', ok: (i) => type[i] === PARK },
+  { id: 'samsaek', e: '😺', n: '삼색이', where: '주택가 골목', d: '골목 담장 위를 사뿐사뿐 걸어 다녀요.', ok: (i) => type[i] === RZ && lvl[i] > 0 },
+  { id: 'tux', e: '😼', n: '턱시도', where: '상가 골목', d: '가게 앞에서 손님을 맞는 동네 지배인이에요.', ok: (i) => type[i] === CZ && lvl[i] > 0 },
+  { id: 'godeung', e: '😸', n: '고등어', where: '강가·하천가', d: '무거천 물소리를 들으며 산책해요.', ok: (i) => type[i] !== WATER && nearWater(i, 1) },
+  { id: 'nanum', e: '😻', n: '나눔이', where: '착한가게 앞', d: '착한가게 사장님이 밥을 챙겨 주는 단골이에요.', ok: (i) => !!good[i] },
+  { id: 'bom', e: '😽', n: '다시봄', where: '공감벤치 옆', d: '벤치에 앉은 이웃 옆에 슬쩍 다가와 앉아요.', ok: (i) => type[i] === SERV && anchor[i] >= 0 && SK[skind[anchor[i]]].id === 'bench' },
+  { id: 'jeotso', e: '😹', n: '젖소', where: '공장 마당', d: '점심시간마다 공장 마당에 나타나요.', ok: (i) => type[i] === IZ && lvl[i] > 0 },
+  { id: 'kkamang', e: '🙀', n: '까망이', where: '밤 골목', d: '해가 지면 나타나는 수줍은 친구예요.', ok: (i) => (hour > 19.5 || hour < 5) && isZone(type[i]) && lvl[i] > 0 },
+  { id: 'nunsong', e: '🐈', n: '눈송이', where: '겨울 동네', d: '겨울에만 볼 수 있는 하얀 털의 친구예요.', ok: (i) => (S.month === 12 || S.month <= 2) && type[i] === RZ && lvl[i] > 0 },
+];
+function catCount() { return CATS22.filter((c) => S.cats && S.cats[c.id]).length; }
+let catTimer = 25;
+function catSpawn(force) {
+  if (!S.cats) S.cats = {};
+  if (bubs.some((b) => b.kind === 'cat')) return false;
+  const left = CATS22.filter((c) => !S.cats[c.id]); if (!left.length) return false;
+  const R = clamp(cam.dist * .42, 5, 26);
+  for (let rr = 0; rr < left.length; rr++) {
+    const c = left[(rr + ((Math.random() * left.length) | 0)) % left.length];
+    for (let tr = 0; tr < 60; tr++) {
+      const x = Math.round(cam.tx + (Math.random() - .5) * 2 * R), y = Math.round(cam.tz + (Math.random() - .5) * 2 * R * .8);
+      if (x < 0 || y < 0 || x >= W || y >= H) continue; const i = y * W + x;
+      if (!inside[i] || !c.ok(i)) continue;
+      addBubble(i, 'cat'); const b = bubs[bubs.length - 1]; b.cat = c.id; b.life = force ? 30 : 16;
+      b.el.classList.add('cat'); b.el.setAttribute('aria-label', '길고양이와 인사하기'); b.el.querySelector('i').textContent = c.e;
+      return true;
+    }
+  }
+  return false;
+}
+function catFound(b) {
+  const c = CATS22.find((q) => q.id === b.cat); if (!c) return;
+  if (!S.cats) S.cats = {};
+  tone(820, .1, { to: 1180, vol: .07, type: 'triangle' }); setTimeout(() => tone(1180, .16, { to: 760, vol: .06, type: 'triangle' }), 110);
+  puff(b.i, true);
+  if (S.cats[c.id]) { notify(`${c.e} ${c.n}: "야옹~"`, 'say'); return; }
+  S.cats[c.id] = [S.year, S.month]; S.money += 50; updateHUD();
+  const n = catCount();
+  if (n === CATS22.length) celebrate('길고양이 도감 완성', `아홉 친구와 모두 친해졌어요. 삼호동은 고양이도 살기 좋은 동네예요.`, 9, '모두 만났어요');
+  else notify(`${c.e} 길고양이 '${c.n}'와 친해졌어요. ${c.d} (${n}/${CATS22.length})`, 'gold');
+  logEvt(`삼호동 길고양이 '${c.n}', 동장과 인사 나눠`, `${c.where}에서 만난 ${c.n}. ${c.d}`, 1.5, 'cat');
+  checkStamps();
+}
+function stepCats(dt) {
+  if (!started || !S.speed || SET.bub === false || document.body.classList.contains('building') || document.body.classList.contains('photo')) return;
+  catTimer -= dt;
+  if (catTimer <= 0) { catTimer = catSpawn() ? 40 + Math.random() * 40 : 12; }
+}
+
+/* ───────── v22: 동네 등급 (Micropolis의 도시 등급처럼 인구에 따라 올라가요) ───────── */
+const RANKS = [[0, '작은 마을', '🏡'], [500, '아담한 동네', '🏘️'], [2000, '정다운 동네', '🌳'], [5000, '북적이는 동네', '🏬'], [10000, '큰 동네', '🏙️'], [20000, '으뜸 동네', '🌟'], [30000, '울산 대표 동네', '👑']];
+function rankOf(p) { let r = 0; for (let k = 0; k < RANKS.length; k++) if (p >= RANKS[k][0]) r = k; return r; }
+function checkRank() {
+  if (!started) return;
+  const r = rankOf(S.pop || 0);
+  if (S.rankMax === null || S.rankMax === undefined) { S.rank = S.rankMax = r; return; }
+  S.rank = r;
+  if (r > S.rankMax) {
+    S.rankMax = r; S.rankUp = (S.rankUp || 0) + 1; const bonus = 300 * r; S.money += bonus; updateHUD();
+    celebrate(`${RANKS[r][2]} ${RANKS[r][1]}`, `주민이 ${fmt(RANKS[r][0])}명을 넘어 동네 등급이 올랐어요. 축하금 ${won(bonus)} 원을 받았어요.`, 10, '동네 등급 상승');
+    logEvt(`삼호동, '${RANKS[r][1]}'(으)로 한 단계 성장`, `주민이 ${fmt(RANKS[r][0])}명을 넘어섰어요.`, 3, 'rank');
+  }
+}
+function rankLine() {
+  const r = rankOf(S.pop || 0), nx = RANKS[r + 1];
+  return `<p class="rankline">지금 삼호동은 <b>${RANKS[r][2]} ${RANKS[r][1]}</b>${nx ? ` · 다음 등급 '${nx[1]}'까지 주민 ${fmt(Math.max(0, nx[0] - (S.pop || 0)))}명` : ' · 가장 높은 등급이에요'}</p>`;
+}
+function catsHTML() {
+  if (!S.cats) S.cats = {};
+  return `<h4 class="cathead">길고양이 친구들 <span>${catCount()}/${CATS22.length}</span></h4>
+    <div class="stamps cats">${CATS22.map((c) => { const g = S.cats[c.id]; return `<div class="stamp${g ? ' on' : ''}"><i>${g ? c.e : '?'}</i><b>${g ? c.n : '???'}</b><small>${g ? `${g[0]}.${g[1]}.` : c.where}</small></div>`; }).join('')}</div>
+    <p class="fine">고양이 말풍선이 보이면 눌러서 인사해 보세요. 사는 곳과 시간, 계절이 저마다 달라요.</p>`;
+}
+
 /* ───────── 칭찬 도장판 (Habitica처럼 모으는 재미) ───────── */
 const STAMPS = [
   { id: 'road', e: '🛣️', n: '첫 삽', d: '길 10칸 내기', ok: () => (S.built.road || 0) >= 10 },
@@ -3395,10 +3645,15 @@ const STAMPS = [
   { id: 'pop', e: '👨‍👩‍👧', n: '북적북적', d: '주민 3,000명 늘리기', ok: () => S.pop - (S.pop0 || 0) >= 3000 },
   { id: 'happy', e: '😊', n: '살기 좋은 동네', d: '만족도 75 넘기기', ok: () => S.pop > 500 && S.happy >= 75 },
   { id: 'approve', e: '🏅', n: '믿음직한 동장', d: '지지도 70% 받기', ok: () => S.pop > 500 && S.poll && S.poll.approve >= 70 },
+  { id: 'rainbow', e: '🌈', n: '무지개 떴다', d: '비 갠 뒤 무지개 보기', ok: () => (S.rainbows || 0) >= 1 },
+  { id: 'cat3', e: '🐾', n: '고양이 친구', d: '길고양이 3마리와 친해지기', ok: () => catCount() >= 3 },
+  { id: 'catAll', e: '😻', n: '고양이 박사', d: '길고양이 9마리 모두 만나기', ok: () => catCount() >= CATS22.length },
+  { id: 'rank', e: '📈', n: '쑥쑥 크는 동네', d: '동네 등급 한 단계 올리기', ok: () => (S.rankUp || 0) >= 1 },
 ];
 function stampCount() { return STAMPS.filter((s) => S.stamps && S.stamps[s.id]).length; }
 function checkStamps() {
   if (!started) return; if (!S.stamps) S.stamps = {};
+  checkRank();
   const got = [];
   for (const s of STAMPS) { let v = false; try { v = s.ok(); } catch (e) {} if (v && !S.stamps[s.id]) { S.stamps[s.id] = [S.year, S.month]; got.push(s); } }
   if (!got.length) return;
@@ -3406,16 +3661,18 @@ function checkStamps() {
   celebrate(got.length > 1 ? `칭찬 도장 ${got.length}개` : `${got[0].e} ${got[0].n}`, `${got.map((s) => s.d).join(', ')} 달성! 도장 하나에 ${won(100)} 원씩 받았어요.`, 5, '칭찬 도장 획득');
   logEvt(`삼호동장, 칭찬 도장 '${got[0].n}' 받아`, `지금까지 모은 도장은 ${stampCount()}개예요.`, 2.5, 'stamp');
 }
-function resetCute() { bubs.forEach((b) => b.el.remove()); bubs.length = 0; walkers.length = 0; duckHomes = null; ferrisScan = 0; bubTimer = 4; giftTimer = 40; }
+function resetCute() { bubs.forEach((b) => b.el.remove()); bubs.length = 0; walkers.length = 0; duckHomes = null; boatHomes = null; ferrisScan = 0; bubTimer = 4; giftTimer = 40; catTimer = 25; rbT = 0; rbPrev = 'clear'; }
 function updateKami() { const b = $('kamiN'); if (b) b.textContent = stampCount() + '/' + STAMPS.length; }
-const KAMI_SAY = ['동장님, 오늘도 삼호동 한 바퀴 돌아볼까요?', '말풍선을 누르면 주민 이야기를 들을 수 있어요.', '선물 상자가 보이면 얼른 눌러 보세요!', '강에 오리 가족이 놀러 왔어요. 찾아보셨나요?', '도장을 다 모으면 진짜 명예 동장이에요.'];
+const KAMI_SAY = ['동장님, 오늘도 삼호동 한 바퀴 돌아볼까요?', '말풍선을 누르면 주민 이야기를 들을 수 있어요.', '선물 상자가 보이면 얼른 눌러 보세요!', '강에 오리 가족이 놀러 왔어요. 찾아보셨나요?', '도장을 다 모으면 진짜 명예 동장이에요.', '동네 곳곳에 길고양이 아홉 마리가 숨어 있어요.', '태화강에 돛단배가 떠 있어요. 가까이 가 보세요!', '비가 그치면 하늘을 올려다보세요. 무지개가 뜰지도 몰라요.'];
 function openStamps() {
   if (!S.stamps) S.stamps = {};
   const n = stampCount();
   sheetBody.innerHTML = `<div class="row"><strong style="flex:1;font-size:16px">칭찬 도장판</strong><button class="btn" id="sheetClose">닫기</button></div>
     <div class="kamibox">${KAMI}<p><b>까미</b>${n === STAMPS.length ? '도장을 다 모았어요. 동장님이 삼호동 명예의 전당에 올랐어요!' : n ? `도장 ${n}개를 모았어요. ${KAMI_SAY[(S.day || 0) % KAMI_SAY.length]}` : KAMI_SAY[(S.day || 0) % KAMI_SAY.length]}</p></div>
+    ${rankLine()}
     <div class="stamps">${STAMPS.map((s) => { const g = S.stamps[s.id]; return `<div class="stamp${g ? ' on' : ''}"><i>${g ? s.e : '?'}</i><b>${s.n}</b><small>${g ? `${g[0]}.${g[1]}.` : s.d}</small></div>`; }).join('')}</div>
-    <p class="fine">도장 하나를 받을 때마다 동네 살림에 ${won(100)} 원이 보태져요.</p>`;
+    <p class="fine">도장 하나를 받을 때마다 동네 살림에 ${won(100)} 원이 보태져요.</p>
+    ${catsHTML()}`;
   $('sheetClose').onclick = closeSheet; sheetEl.hidden = false;
 }
 
@@ -4065,6 +4322,7 @@ const VK = {
   bus: { mesh: 'bus', L: .58, Hh: .2, Wd: .14, sp: .75 },
 };
 const CAR_COLS = [[0xf1f1ee, 28], [0xe5e1d8, 8], [0x202327, 18], [0xb7bbbe, 16], [0x6d7378, 10], [0x2b3a52, 7], [0x8e2b27, 5], [0xc9bd9c, 3], [0x3f5a4b, 3], [0x3d5f8a, 2]];
+if (CUTE) CAR_COLS.splice(0, CAR_COLS.length, [0xfffdf7, 22], [0xfff0d6, 8], [0xf7a998, 10], [0x8fc7ee, 12], [0xa8e0c0, 10], [0xf9d976, 10], [0xc9b6ee, 8], [0xf4a9c4, 8], [0x5a6472, 8], [0xe8605a, 4]);
 function pickCarCol() { let r = Math.random() * 100; for (const [c, w] of CAR_COLS) { r -= w; if (r <= 0) return c; } return 0xf1f1ee; }
 let rushNow = 1, busOn = false, truckBias = .04;
 const laneOff = (i, car) => type[i] === AVE ? (car.ln ? .275 : .1) : .118;
@@ -4629,7 +4887,7 @@ function openMenu() {
   }
   const L = missions();
   $('mlist').innerHTML = L.map((m, k) => `<li class="${k < S.mi ? 'done' : k === S.mi ? 'cur' : ''}"><b>${String(k + 1).padStart(2, '0')}</b><span>${m.t}</span><em>${won(m.reward)}</em></li>`).join('');
-  $('optCycle').checked = SET.cycle; $('optShadow').checked = SET.shadow; $('optFx').checked = SET.fx; $('optDis').checked = SET.dis; $('optSnd').checked = SET.snd; $('optBub').checked = SET.bub; $('optMini').checked = SET.mini; $('optConfirm').checked = SET.confirm;
+  $('optCycle').checked = SET.cycle; $('optShadow').checked = SET.shadow; $('optFx').checked = SET.fx; $('optDis').checked = SET.dis; $('optSnd').checked = SET.snd; $('optBub').checked = SET.bub; $('optPastel').checked = SET.pastel !== false; $('optMini').checked = SET.mini; $('optConfirm').checked = SET.confirm;
   $('newConfirm').hidden = true; $('saveInfo').textContent = '매달 자동 저장돼요.';
 }
 function drawChart() {
@@ -4659,6 +4917,7 @@ $('optCycle').onchange = (e) => { SET.cycle = e.target.checked; saveSettings(); 
 $('optShadow').onchange = (e) => { setShadows(e.target.checked); };
 $('optFx').onchange = (e) => { SET.fx = e.target.checked; saveSettings(); setupFX(); };
 $('optBub').onchange = (e) => { SET.bub = e.target.checked; saveSettings(); };
+$('optPastel').onchange = (e) => { SET.pastel = e.target.checked; saveSettings(); save(); notify('그림체는 게임을 다시 열면 바뀌어요.'); };
 $('btnKami').insertAdjacentHTML('afterbegin', KAMI); $('btnKami').onclick = () => openStamps();
 { const h1 = document.querySelector('#start h1'); if (h1) h1.insertAdjacentHTML('beforeend', KAMI); }
 $('optSnd').onchange = (e) => { SET.snd = e.target.checked; saveSettings(); if (SET.snd) { audio(); sfx('gold'); } else sfxRain(0); };
@@ -4876,6 +5135,7 @@ document.querySelectorAll('.mode[data-mode]').forEach((b) => drawThumb(b.querySe
 /* ───────── 하루·계절 ───────── */
 let hour = 16.8, nightK = 0;
 const SKY = { night: new THREE.Color(0x0f171e), dawn: new THREE.Color(0xe6cbb6), day: new THREE.Color(0xdde5e8), dusk: new THREE.Color(0xe9b38f) };
+if (CUTE) { SKY.day.setHex(0xdcf0fb); SKY.dawn.setHex(0xffdccf); SKY.dusk.setHex(0xffc7ab); }
 const skyC = new THREE.Color(), tmpSkyTop = new THREE.Color();
 function applyTime() {
   const hh = hour, elev = Math.sin((hh - 6) / 12 * Math.PI), dayK = clamp(elev * 1.7, 0, 1);
@@ -4886,11 +5146,11 @@ function applyTime() {
   else if (hh < 18.5) skyC.copy(SKY.day).lerp(SKY.dusk, (hh - 16.5) / 2);
   else skyC.copy(SKY.dusk).lerp(SKY.night, (hh - 18.5) / 1.5);
   scene.background = skyC; scene.fog.color.copy(skyC);
-  { const su = skyDome.material.uniforms; su.hor.value.copy(skyC); su.top.value.copy(skyC).lerp(tmpSkyTop.setHex(dayK > .2 ? 0x8fb2cc : 0x0a1220), .55 + .15 * dayK);
+  { const su = skyDome.material.uniforms; su.hor.value.copy(skyC); su.top.value.copy(skyC).lerp(tmpSkyTop.setHex(dayK > .2 ? (CUTE ? 0x74bdf0 : 0x8fb2cc) : 0x0a1220), .55 + .15 * dayK);
     const az0 = (hh - 6) / 12 * Math.PI; su.sunDir.value.set(-Math.cos(az0), Math.max(.02, elev), .45).normalize(); su.glow.value = clamp(elev * 3, 0, 1) * (hh < 9 || hh > 15.5 ? 1.4 : .7); su.sunC.value.setHex(hh < 8.5 || hh > 16 ? 0xffb37a : 0xfff1d8); }
   U.pxScale.value = renderer.domElement.height / (2 * Math.tan(camera.fov * Math.PI / 360)); U.cam.value.copy(camera.position);
   scene.fog.near = cam.dist * 1.15; scene.fog.far = cam.dist * 3.4;
-  hemi.intensity = .3 + .1 * dayK; hemi.color.setHex(dayK > .3 ? 0xf3f6fa : 0xa6b8d4);
+  hemi.intensity = .3 + (CUTE ? .12 : .1) * dayK; hemi.color.setHex(dayK > .3 ? 0xf3f6fa : 0xa6b8d4);
   sun.intensity = .04 + .64 * dayK;
   sun.color.setHex(hh < 8.5 || hh > 16 ? 0xffc79c : 0xfff3e4);
   const az = (hh - 6) / 12 * Math.PI, sunH = 18 + Math.max(0, elev) * 60;
@@ -4955,11 +5215,11 @@ function frame(t) {
   flushGround(false);
   applyTime(); applyWeatherLight(); stepWeather(dt, t); stepPetals(dt, t); stepFireworks(dt, t); sfxRain(wxK);
   stepCars(!started ? dt : S.speed ? dt * Math.min(2, S.speed) : 0, nightK);
-  stepWalkers(dt, t); stepDucks(t); stepBalloons(t); stepFerris(dt, t); stepBubbles(dt);
+  stepWalkers(dt, t); stepDucks(t); stepBalloons(t); stepFerris(dt, t); stepBubbles(dt); stepClouds(dt, t); stepBoats(t); stepRainbow(dt); stepCats(dt);
   stepBirds(t, hour);
   if (camChanged) { updateLabels(); drawMini(); camChanged = false; } else if (miniDirty) drawMini();
   skyDome.position.copy(camera.position);
-  waterNormal.offset.set((t / 1000 * .012) % 1, (t / 1000 * .007) % 1); waterMat.color.setHex(nightK > .6 ? 0x2c4456 : 0x7ea7c0);
+  waterNormal.offset.set((t / 1000 * .012) % 1, (t / 1000 * .007) % 1); waterMat.color.setHex(nightK > .6 ? 0x2c4456 : WATER_DAY);
   if (composer) { stepFX(); composer.render(dt); } else renderer.render(scene, camera);
   if (perf && !perf.done && t > perf.t0) {
     perf.n++; perf.sum += dt;
