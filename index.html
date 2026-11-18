@@ -439,6 +439,8 @@ body.building #bubbles, body.photo #bubbles, body:not(.playing) #bubbles { displ
 .dil-o small { font-size: 12px; color: var(--muted); line-height: 1.45; }
 .dil-o .pm { display: flex; flex-direction: column; gap: 2px; margin-top: 4px; font-size: 12px; line-height: 1.45; }
 .dil-o .p { color: var(--ok); } .dil-o .m { color: var(--bad); }
+.dil-o button:disabled { opacity: .5; cursor: default; }
+.dil-o button:disabled:hover { border-color: var(--hair); background: var(--glass-strong); }
 .story { display: flex; flex-direction: column; gap: 8px; border-top: 1px solid var(--hair-2); padding-top: 14px; }
 .story h4 small { font-weight: 400; letter-spacing: 0; margin-left: 6px; }
 .pollist .pi.pe { font-size: 17px; }
@@ -3816,8 +3818,8 @@ function storyHappy() {
 
 /* 선택 이벤트 */
 const DIL = {
-  crow: { e: '🐦', k: '겨울 철새', t: '떼까마귀 11만 마리, 어떻게 맞이할까요?',
-    b: '태화강 삼호대숲에 떼까마귀가 돌아왔어요. 저녁 군무를 보러 관광객이 찾아오지만, 해 질 녘 전깃줄 아래 배설물과 소음 민원이 쏟아지고 있어요.',
+  crow: { e: '🐦', k: '겨울 철새', t: '떼까마귀 10만 마리, 어떻게 맞이할까요?',
+    b: '태화강 삼호대숲에 올겨울도 떼까마귀가 10만 마리 넘게 돌아왔어요. 저녁 군무를 보러 관광객이 찾아오지만, 해 질 녘 전깃줄 아래 배설물과 소음 민원이 쏟아지고 있어요.',
     o: [
       { k: 'drive', t: '강경 퇴치 작전', s: '레이저와 퇴치반으로 새를 쫓아내요.', p: '민원이 바로 줄어요', m: '환경 지수가 크게 떨어지고 철새 관광 수입이 끊겨요' },
       { k: 'live', t: '상생 공존 시스템', s: '새벽 물청소반, 철새홍보관, 역발상 "운수대똥" 상품권 이벤트를 열어요.', p: '해마다 생태관광 인기가 올라요', m: '철새 철마다 청소비가 월 40씩 들어요' },
@@ -3825,19 +3827,19 @@ const DIL = {
   inverter: { e: '☀️', k: '태양광 7년 차', t: '태양광 인버터가 한꺼번에 낡았어요',
     b: '그린빌리지 태양광을 단 지 7년이 지나 인버터 수명이 다했어요. 혼자 사시는 어르신 집이 많아 교체비 부담에 발전을 멈춘 집이 늘고 있어요.',
     o: [
-      { k: 'aid', t: '교체 보조금 직접 지원', s: '동네 예산으로 교체비를 지원해요. 1,700만 원.', p: '바로 모든 집이 다시 발전해요', m: '한 번에 큰 예산이 나가요' },
-      { k: 'group', t: '공동구매 알선', s: '시공업체와 공동구매를 연결하고 행정이 중재해요. 200만 원.', p: '예산을 아낄 수 있어요', m: '1년쯤 걸려 70~95%만 회복돼요' },
+      { k: 'aid', t: '교체 보조금 직접 지원', s: '동네 예산으로 교체비를 지원해요. 1,700만 원.', c: 1700, p: '바로 모든 집이 다시 발전해요', m: '한 번에 큰 예산이 나가요' },
+      { k: 'group', t: '공동구매 알선', s: '시공업체와 공동구매를 연결하고 행정이 중재해요. 200만 원.', c: 200, p: '예산을 아낄 수 있어요', m: '1년쯤 걸려 70~95%만 회복돼요' },
     ] },
   regen: { e: '🏘️', k: '구도심 재생', t: '낡은 골목, 어떻게 바꿀까요?',
-    b: '와와마을 골목 주택이 많이 낡았어요. 개발업체는 전면 재개발을 제안하고, 주민 일부는 동네 모습을 지키며 고쳐 살고 싶어 해요.',
+    b: '오래된 골목 주택이 많이 낡았어요. 개발업체는 전면 재개발을 제안하고, 주민 일부는 동네 모습을 지키며 고쳐 살고 싶어 해요. (게임 속 가상의 상황이에요)',
     o: [
       { k: 'redevelop', t: '전면 철거 재개발', s: '업체가 기부채납금 2,000만 원을 내요.', p: '예산이 크게 늘어요', m: '1년간 이주·공사 갈등으로 만족이 떨어지고, 동네 문화 지수가 내려가요' },
-      { k: 'community', t: '와와 커뮤니티하우스', s: '빈 땅에 주민 도서관과 돌봄 공간을 함께 지어요. 1,500만 원.', p: '어르신과 아이 있는 집 만족이 오래 올라요', m: '예산이 들어요' },
+      { k: 'community', t: '골목 커뮤니티하우스', s: '빈 땅에 주민 도서관과 돌봄 공간을 함께 지어요. 1,500만 원.', c: 1500, p: '어르신과 아이 있는 집 만족이 오래 올라요', m: '예산이 들어요' },
     ] },
   bridge: { e: '🌉', k: '근대문화유산', t: '구 삼호교 안전진단 시기예요',
-    b: '1924년에 놓인 울산 첫 근대식 콘크리트 다리, 구 삼호교. 지금은 걸어서만 건너요. 큰비에 물살이 세지면 교각 아래가 깎일 수 있어요.',
+    b: '1924년에 놓인 100살 넘은 콘크리트 다리, 구 삼호교. 지금은 걸어서만 건너요. 큰비에 물살이 세지면 교각 아래가 깎일 수 있어요.',
     o: [
-      { k: 'check', t: '정밀안전진단·보강', s: '전문기관 진단과 교각 보강. 300만 원.', p: '2년 동안 태풍에도 안전해요', m: '예산이 조금 들어요' },
+      { k: 'check', t: '정밀안전진단·보강', s: '전문기관 진단과 교각 보강. 300만 원.', c: 300, p: '2년 동안 태풍에도 안전해요', m: '예산이 조금 들어요' },
       { k: 'skip', t: '다음에 하기', s: '올해는 예산을 아껴요.', p: '돈이 들지 않아요', m: '태풍이 오면 다리가 내려앉을 수 있어요. 그러면 3년간 통행이 막혀요' },
     ] },
 };
@@ -3846,10 +3848,11 @@ function openDilemma(id) {
   const D = DIL[id]; if (!D) return;
   S.dilPending = id;
   if (S.speed) dilSpeed = S.speed; setSpeed(0);
+  const af = D.o.map((o) => !o.c || S.money >= o.c), ok = af.some((x) => x) ? af : af.map(() => true); // 둘 다 모자라면 빚을 내서라도 고를 수 있게
   sheetBody.innerHTML = `<div class="row"><strong style="flex:1;font-size:16px">동장의 선택</strong><span class="dil-k">${D.e} ${D.k}</span></div>
     <div class="kamibox">${KAMI}<p><b>까미</b>${D.t}</p></div>
     <p class="dil-b">${D.b}</p>
-    <div class="dil-o">${D.o.map((o, q) => `<button data-dil="${q}"><b>${String.fromCharCode(65 + q)}. ${o.t}</b><small>${o.s}</small><span class="pm"><span class="p">＋ ${o.p}</span><span class="m">－ ${o.m}</span></span></button>`).join('')}</div>
+    <div class="dil-o">${D.o.map((o, q) => `<button data-dil="${q}"${ok[q] ? '' : ' disabled'}><b>${String.fromCharCode(65 + q)}. ${o.t}</b><small>${o.s}</small><span class="pm"><span class="p">＋ ${o.p}</span><span class="m">－ ${o.m}</span></span>${ok[q] ? '' : '<span class="m">지금은 예산이 모자라요</span>'}</button>`).join('')}</div>
     <p class="fine">정답은 없어요. 고른 길에 따라 동네가 달라져요. 효과와 비용은 게임용 계산이에요.</p>`;
   sheetBody.querySelectorAll('[data-dil]').forEach((b) => { b.onclick = () => chooseDilemma(id, D.o[+b.dataset.dil].k); });
   sheetEl.hidden = false;
@@ -3882,10 +3885,11 @@ function storyMonth(m) {
   if (S.crowPlan === 'live' && m === 12) logEvt('떼까마귀 "운수대똥" 이벤트 화제', '배설물을 맞은 관광객에게 상품권을 주는 역발상 이벤트에 웃음꽃이 피었어요. 새벽 물청소반 덕분에 골목도 깨끗해요.', 4.5, 'season');
   if (S.crowPlan === 'drive' && m === 12) logEvt('떼까마귀 떠난 태화강, 겨울 군무 사라져', '민원은 줄었지만 생태관광객 발길도 끊겼어요.', 3, 'season');
   if (S.inv === 'group' && mi - (S.invT || 0) === 12) notify('☀️ 공동구매 인버터 교체가 거의 끝났어요. 태양광 발전이 다시 늘었어요.', 'gold');
-  if (S.dilPending) { if (sheetEl.hidden) openDilemma(S.dilPending); return; }
-  if (!started || !sheetEl.hidden || !$('menu').hidden) return;
+  const busy = document.body.classList.contains('photo') || document.body.classList.contains('building');
+  if (S.dilPending) { if (sheetEl.hidden && !busy) openDilemma(S.dilPending); return; }
+  if (!started || busy || !sheetEl.hidden || !$('menu').hidden) return;
   const pop = S.pop || 0;
-  if (!S.crowPlan && m === 11 && pop > 200) return openDilemma('crow');
+  if (!S.crowPlan && (m >= 11 || m <= 2) && pop > 200 && mi - S.start >= 3) return openDilemma('crow');
   if (projOn('solar') && !S.inv && mi - S.proj.solar >= 84) return openDilemma('inverter');
   if (!S.regen && pop >= 12000 && mi - (S.start || mi) >= 18 && m === 6) return openDilemma('regen');
   if (m === 3 && !S.bridgeClosed && pop > 500 && mi - (S.bridgeAsk || S.start || mi) >= 24) return openDilemma('bridge');
@@ -3925,7 +3929,7 @@ function openLegend(after) {
     <h3>세 번 부른 동네, 삼호</h3>
     <p>먼 옛날 신라 경순왕이 문수보살을 만나러 이곳을 찾았어요. 길을 안내하던 동자승이 홀연히 사라지자, 왕은 동자승을 <b>세 번 불렀다</b>고 해요. 그래서 이 동네 이름이 <b>삼호(三呼)</b>예요.</p>
     <p>세 번 탄식한 곳은 <b>삼탄</b>, "헐 수 없다"며 한탄한 정자 터는 <b>헐수정</b>이 되었다고 전해져요.</p>
-    <p>천 년 뒤, 태화강 대숲과 무거천 벚꽃길 사이에 2만 명이 모여 사는 이 동네의 동장으로 당신이 부임했어요. 이번엔 주민들이 동장을 부를 거예요. 세 번이 아니라, 매일매일.</p>
+    <p>천 년 뒤, 태화강 대숲과 무거천 벚꽃길 사이에 이웃들이 모여 사는 이 동네의 동장으로 당신이 부임했어요. 이번엔 주민들이 동장을 부를 거예요. 세 번이 아니라, 매일매일.</p>
     <button class="btn primary" id="legendGo">삼호동 둘러보기</button>
     <p class="fine">지명 유래는 전해 오는 이야기예요.</p></div>`;
   $('legendGo').onclick = () => { if (after) after(); else { closeSheet(); setSpeed(dilSpeed || 1); } };
@@ -5325,6 +5329,7 @@ function continueGame(d) {
   S.jam0 = S.jam0 || S.jam;
   begin(); applyCam(); selectCat('look'); checkMissions();
   setTimeout(() => notify(`${S.year}년 ${S.month}월, 이어서 시작해요.`), 300);
+  if (S.dilPending) setTimeout(() => { if (sheetEl.hidden) openDilemma(S.dilPending); }, 1500);
 }
 document.querySelectorAll('.mode[data-mode]').forEach((b) => b.onclick = () => newGame(b.dataset.mode));
 
