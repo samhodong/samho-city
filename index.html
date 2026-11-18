@@ -430,6 +430,28 @@ body.building #bubbles, body.photo #bubbles, body:not(.playing) #bubbles { displ
 .stamps.cats .stamp.on { border-color: #f4a9bf; background: #fff5f8; }
 .stamps.cats .stamp.on i { box-shadow: inset 0 0 0 2px #f4a9bf, 0 2px 6px rgba(226, 99, 122, .25); transform: rotate(6deg); }
 .bub.pop i { animation: bubPop .3s ease-out forwards; }
+.dil-k { font-size: 11px; padding: 3px 9px; border-radius: 20px; background: var(--hair-2); color: var(--ink-2); white-space: nowrap; }
+.dil-b { margin: 0; font-size: 13.5px; line-height: 1.6; color: var(--ink-2); text-wrap: pretty; }
+.dil-o { display: flex; flex-direction: column; gap: 8px; }
+.dil-o button { display: flex; flex-direction: column; gap: 4px; text-align: left; border: 1px solid var(--hair); background: var(--glass-strong); border-radius: 14px; padding: 12px 14px; color: inherit; transition: border-color .15s, background .15s; }
+.dil-o button:hover, .dil-o button:focus-visible { border-color: var(--accent); background: var(--accent-soft); }
+.dil-o b { font-size: 15px; font-weight: 600; }
+.dil-o small { font-size: 12px; color: var(--muted); line-height: 1.45; }
+.dil-o .pm { display: flex; flex-direction: column; gap: 2px; margin-top: 4px; font-size: 12px; line-height: 1.45; }
+.dil-o .p { color: var(--ok); } .dil-o .m { color: var(--bad); }
+.story { display: flex; flex-direction: column; gap: 8px; border-top: 1px solid var(--hair-2); padding-top: 14px; }
+.story h4 small { font-weight: 400; letter-spacing: 0; margin-left: 6px; }
+.pollist .pi.pe { font-size: 17px; }
+.pollist small.fx { color: var(--accent); }
+.pollist button[aria-disabled="true"] { cursor: default; }
+.dil-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; font-size: 12.5px; }
+.dil-list li { display: flex; justify-content: space-between; gap: 10px; padding: 6px 10px; border-radius: 10px; background: var(--hair-2); }
+.dil-list b { font-weight: 600; }
+.legend-story { display: flex; flex-direction: column; gap: 12px; text-align: center; align-items: center; padding: 8px 4px; }
+.legend-story small { font-family: var(--f-num); font-size: 11px; letter-spacing: .3em; color: var(--accent); }
+.legend-story h3 { margin: 0; font-family: var(--f-title); font-size: 26px; letter-spacing: -.01em; color: var(--ink); text-transform: none; }
+.legend-story p { margin: 0; font-size: 13.5px; line-height: 1.7; color: var(--ink-2); text-wrap: pretty; text-align: left; }
+.legend-story .btn { margin-top: 6px; padding: 11px 22px; }
 .bub.bye i { opacity: 0; transition: opacity .35s; }
 @keyframes bubIn { from { transform: scale(0); } to { transform: scale(1); } }
 @keyframes bubBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
@@ -746,7 +768,7 @@ function freshState(mode) {
   welInit(mode);
   Object.assign(S, {
     v: 2, mode, money: { empty: 15000, village: 20000, real: 30000 }[mode], year: 2026, month: 10, day: 0, tax: 9, speed: 1, happy: 60,
-    unlocked: {}, crowSeason: -1, blossomYear: 0, msgCool: 2, milestones: {}, mi: 0, built: { road: 0, south: 0, redev: 0, park: 0 }, stamps: {}, heard: 0, gifts: 0, photoN: 0, festYear: 0, fastFire: 0, cats: {}, rainbows: 0, rank: null, rankMax: null, rankUp: 0,
+    unlocked: {}, crowSeason: -1, blossomYear: 0, msgCool: 2, milestones: {}, mi: 0, built: { road: 0, south: 0, redev: 0, park: 0 }, stamps: {}, heard: 0, gifts: 0, photoN: 0, festYear: 0, fastFire: 0, cats: {}, rainbows: 0, rank: null, rankMax: null, rankUp: 0, proj: {}, crowPlan: null, crowYears: 0, dil: {}, dilN: 0, dilPending: null, inv: null, invT: 0, regen: null, regenT: 0, bridgeT: 0, bridgeAsk: 0, bridgeClosed: 0, start: 0, parkN: 0,
     hist: [], jam0: 0, pop0: 0, goods0: 0, lastNet: 0, ledger: null, usedGood: [],
     pop: 0, jobsC: 0, jobsI: 0, jobsS: 0, dR: 1, dC: -.5, dI: 1, goods: 0, jam: 0, southPop: 0, emptyZones: [0, 0, 0],
     pol: {}, wx: { k: 'clear', d: 0 }, wxDays: { rain: 0, snow: 0 }, evt: [], news: [], newsNo: 0, newsUnread: 0, fires: [], flood: [], disCost: 0, typhoonYear: 0,
@@ -3648,6 +3670,8 @@ const STAMPS = [
   { id: 'rainbow', e: '🌈', n: '무지개 떴다', d: '비 갠 뒤 무지개 보기', ok: () => (S.rainbows || 0) >= 1 },
   { id: 'cat3', e: '🐾', n: '고양이 친구', d: '길고양이 3마리와 친해지기', ok: () => catCount() >= 3 },
   { id: 'catAll', e: '😻', n: '고양이 박사', d: '길고양이 9마리 모두 만나기', ok: () => catCount() >= CATS22.length },
+  { id: 'eco', e: '🌿', n: '생태도시', d: '환경 지수 80 넘기기', ok: () => S.pop > 300 && envIdx() >= 80 },
+  { id: 'story', e: '📜', n: '결단의 동장', d: '동장의 선택 3번 하기', ok: () => (S.dilN || 0) >= 3 },
   { id: 'rank', e: '📈', n: '쑥쑥 크는 동네', d: '동네 등급 한 단계 올리기', ok: () => (S.rankUp || 0) >= 1 },
 ];
 function stampCount() { return STAMPS.filter((s) => S.stamps && S.stamps[s.id]).length; }
@@ -3663,7 +3687,7 @@ function checkStamps() {
 }
 function resetCute() { bubs.forEach((b) => b.el.remove()); bubs.length = 0; walkers.length = 0; duckHomes = null; boatHomes = null; ferrisScan = 0; bubTimer = 4; giftTimer = 40; catTimer = 25; rbT = 0; rbPrev = 'clear'; }
 function updateKami() { const b = $('kamiN'); if (b) b.textContent = stampCount() + '/' + STAMPS.length; }
-const KAMI_SAY = ['동장님, 오늘도 삼호동 한 바퀴 돌아볼까요?', '말풍선을 누르면 주민 이야기를 들을 수 있어요.', '선물 상자가 보이면 얼른 눌러 보세요!', '강에 오리 가족이 놀러 왔어요. 찾아보셨나요?', '도장을 다 모으면 진짜 명예 동장이에요.', '동네 곳곳에 길고양이 아홉 마리가 숨어 있어요.', '태화강에 돛단배가 떠 있어요. 가까이 가 보세요!', '비가 그치면 하늘을 올려다보세요. 무지개가 뜰지도 몰라요.'];
+const KAMI_SAY = ['동장님, 오늘도 삼호동 한 바퀴 돌아볼까요?', '말풍선을 누르면 주민 이야기를 들을 수 있어요.', '선물 상자가 보이면 얼른 눌러 보세요!', '강에 오리 가족이 놀러 왔어요. 찾아보셨나요?', '도장을 다 모으면 진짜 명예 동장이에요.', '동네 곳곳에 길고양이 아홉 마리가 숨어 있어요.', '태화강에 돛단배가 떠 있어요. 가까이 가 보세요!', '비가 그치면 하늘을 올려다보세요. 무지개가 뜰지도 몰라요.', '삼호(三呼)는 세 번 불렀다는 뜻이래요. 더보기의 삼호 이야기에서 들어 보세요.', '시책 창 아래 삼호 사업으로 곱창거리와 태양광을 만들 수 있어요.'];
 function openStamps() {
   if (!S.stamps) S.stamps = {};
   const n = stampCount();
@@ -3687,6 +3711,7 @@ const POLI = [
   { id: 'shop', name: '골목상권 살리기', ic: 'shop', base: 30, per: .007, d: '상업 수요가 오르고 착한가게 가입이 늘어요.' },
   { id: 'parking', name: '공유주차장 개방', ic: 'road', base: 15, per: .004, d: '길 막힘 불만과 교통 걱정이 줄어요.' },
   { id: 'drain', name: '빗물받이 정비', ic: 'water', base: 10, per: .003, d: '태풍·집중호우 때 강변 침수 피해를 크게 줄여요.' },
+  { id: 'sandbag', name: '수방자재 비축', ic: 'water', base: 8, per: .002, d: '동 행정복지센터에 양수기와 모래주머니를 미리 쌓아 둬요. 침수 피해가 줄어요.' },
   { id: 'festival', name: '궁거랑 낭만축제', ic: 'star', fixed: 300, apr: true, d: '4월 벚꽃 철에 축제를 열어요. 관광 수입과 가게 매출, 만족이 올라요.' },
 ];
 const POL_IC = { shop: 'M4.5 9.5l1.5-5h12l1.5 5M4.5 9.5h15M4.5 9.5v10h15v-10M9.5 19.5v-5h5v5', road: 'M8 3.5L5 20.5M16 3.5l3 17M12 5v3M12 11v3M12 17v3', water: 'M12 3.5s-6 6.6-6 10.6a6 6 0 0012 0c0-4-6-10.6-6-10.6z', star: 'M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.9L12 17l-5.2 2.7 1-5.9-4.3-4.1 5.9-.8z', school: 'M3.5 9.5L12 5l8.5 4.5L12 14zM7 11.5v4.5c3 2.2 7 2.2 10 0v-4.5', park: 'M12 3.5l5 7h-3l4 6H6l4-6H7zM12 16.5v4' };
@@ -3716,7 +3741,8 @@ function openPolicy() {
       return `<button data-pol="${p.id}" class="${on ? 'on' : ''}${ok ? '' : ' na'}" aria-pressed="${on}"><span class="pi">${p.ic in POL_IC ? `<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="${POL_IC[p.ic]}"/></svg>` : svg(p.ic)}</span>
         <span class="pt"><b>${p.name}</b><small>${ok ? p.d : p.needT}</small></span><span class="pc"><em>${p.apr ? '4월 ' + won(p.fixed) : '월 ' + won(c)}</em><i class="tg"></i></span></button>`;
     }).join('')}</div>
-    <p class="fine">SimCity 2000의 '조례'를 삼호동 실정에 맞게 바꾼 거예요. 효과와 비용은 게임용 계산이에요.</p>`;
+    <p class="fine">SimCity 2000의 '조례'를 삼호동 실정에 맞게 바꾼 거예요. 효과와 비용은 게임용 계산이에요.</p>` + storyHTML();
+  bindStory(openPolicy);
   sheetBody.querySelectorAll('[data-pol]').forEach((b) => {
     b.onclick = () => {
       const id = b.dataset.pol, p = POLI.find((q) => q.id === id);
@@ -3730,6 +3756,189 @@ function openPolicy() {
   sheetEl.hidden = false;
 }
 function updatePolChip() { const el = $('polBtn'); if (el) el.innerHTML = `시책 <b class="num">${polCount()}</b>`; }
+
+/* ───────── v23: 삼호 이야기 ─────────
+   지역 조사 자료(헐수정 설화, 삼호대숲·철새, 삼호곱창 특화거리, 그린빌리지 태양광, 구 삼호교, 저지대 침수)를 게임에 담았어요.
+   환경·문화 지수는 Lincity-NG의 지속가능성(환경·자원) 모델, 선택 이벤트는 Micropolis 재난과 정책 선택형 게임의 딜레마 구조를 참고했어요.
+   숫자와 효과는 모두 게임용 계산이에요. */
+const PROJ = [
+  { id: 'heritage', e: '📜', name: '헐수정공원 이야기 쉼터', cost: 300, d: '삼호(三呼) 지명 유래를 알리는 쉼터와 안내판을 세워요.', fx: '문화 +10 · 만족 조금' },
+  { id: 'gopchang', e: '🍢', name: '삼호곱창 특화거리 지정', cost: 800, d: '오래된 먹거리 골목을 특화거리로 정비해요. 외부 손님이 늘지만 골목 주차·쓰레기 관리비가 매달 들어요.', fx: '관광 월 +90 · 문화 +6 · 관리비 월 25', need: () => (S.jobsC || 0) > 40, needT: '상가가 조금 더 생겨야 해요' },
+  { id: 'solar', e: '☀️', name: '그린빌리지 옥상 태양광', cost: 1200, d: '구도심 저층 주택 옥상에 소형 태양광을 달아요. 전기요금 부담이 줄고, 패널이 떼까마귀 배설물도 막아 줘요. 7년쯤 지나면 인버터 교체 시기가 와요.', fx: '환경 +15 · 만족 +1.5' },
+  { id: 'reservoir', e: '🌊', name: '상류 저류지 확장', cost: 1500, d: '집중호우 때 빗물을 잠시 가둬 저지대와 지하차도 침수를 막아요.', fx: '태풍 침수 피해 절반' },
+];
+const projOn = (id) => !!(S.proj && S.proj[id]);
+const mIdx = () => S.year * 12 + S.month;
+function solarEff() { if (!projOn('solar')) return 0; if (S.inv === 'aid') return 1; if (S.inv === 'group') return clamp(.7 + (mIdx() - (S.invT || 0)) * .025, .7, .95); return mIdx() - S.proj.solar >= 84 ? .45 : 1; }
+function envIdx() {
+  let v = 58;
+  if (S.crowPlan === 'live') v += 12; else if (S.crowPlan === 'drive') v -= 28;
+  v += solarEff() * 15;
+  if (polOn('recycle')) v += 5;
+  v -= Math.min(22, (S.jobsI || 0) / 180);
+  v += Math.min(8, (S.parkN || 0) * .03);
+  return Math.round(clamp(v, 0, 100));
+}
+function cultIdx() {
+  let v = 40;
+  if (projOn('heritage')) v += 10; if (projOn('gopchang')) v += 6; if (polOn('festival')) v += 8;
+  if (S.regen === 'community') v += 9; else if (S.regen === 'redevelop') v -= 10;
+  if (S.bridgeClosed > 0) v -= 15; else if (S.bridgeT && mIdx() - S.bridgeT < 24) v += 5;
+  if (countServ('museum')) v += 8; if (countServ('library')) v += 4;
+  if (S.crowPlan === 'live') v += 4;
+  return Math.round(clamp(v, 0, 100));
+}
+function storyCost(m) {
+  let c = 0; const crowSeason = m >= 11 || m <= 2;
+  if (S.crowPlan === 'live' && crowSeason) c += 40;
+  if (S.crowPlan === 'drive' && crowSeason) c += 15;
+  if (projOn('gopchang')) c += 25;
+  return c;
+}
+function storyTour(m) {
+  let t = 0;
+  if (projOn('gopchang')) t += 90 + Math.min(60, (S.goods || 0) * 2);
+  if (S.crowPlan === 'live' && (m >= 11 || m <= 2)) t += Math.min(240, 40 * (S.crowYears || 1));
+  if (projOn('heritage')) t += 15;
+  return t;
+}
+function storyHappy() {
+  let h = 0;
+  if (projOn('heritage')) h += .5;
+  h += solarEff() * 1.5;
+  if (S.crowPlan === 'drive') h += (S.month >= 11 || S.month <= 2) ? 1.5 : 0;
+  if (S.crowPlan === 'live' && (S.month >= 11 || S.month <= 2)) h -= Math.max(0, 2 - (S.crowYears || 0) * .5);
+  if (S.regen === 'community') h += 2; if (S.regen === 'redevelop' && mIdx() - (S.regenT || 0) < 12) h -= 5;
+  if (S.bridgeClosed > 0) h -= 2;
+  h += (envIdx() - 55) * .05 + (cultIdx() - 45) * .04;
+  return h;
+}
+
+/* 선택 이벤트 */
+const DIL = {
+  crow: { e: '🐦', k: '겨울 철새', t: '떼까마귀 11만 마리, 어떻게 맞이할까요?',
+    b: '태화강 삼호대숲에 떼까마귀가 돌아왔어요. 저녁 군무를 보러 관광객이 찾아오지만, 해 질 녘 전깃줄 아래 배설물과 소음 민원이 쏟아지고 있어요.',
+    o: [
+      { k: 'drive', t: '강경 퇴치 작전', s: '레이저와 퇴치반으로 새를 쫓아내요.', p: '민원이 바로 줄어요', m: '환경 지수가 크게 떨어지고 철새 관광 수입이 끊겨요' },
+      { k: 'live', t: '상생 공존 시스템', s: '새벽 물청소반, 철새홍보관, 역발상 "운수대똥" 상품권 이벤트를 열어요.', p: '해마다 생태관광 인기가 올라요', m: '철새 철마다 청소비가 월 40씩 들어요' },
+    ] },
+  inverter: { e: '☀️', k: '태양광 7년 차', t: '태양광 인버터가 한꺼번에 낡았어요',
+    b: '그린빌리지 태양광을 단 지 7년이 지나 인버터 수명이 다했어요. 혼자 사시는 어르신 집이 많아 교체비 부담에 발전을 멈춘 집이 늘고 있어요.',
+    o: [
+      { k: 'aid', t: '교체 보조금 직접 지원', s: '동네 예산으로 교체비를 지원해요. 1,700만 원.', p: '바로 모든 집이 다시 발전해요', m: '한 번에 큰 예산이 나가요' },
+      { k: 'group', t: '공동구매 알선', s: '시공업체와 공동구매를 연결하고 행정이 중재해요. 200만 원.', p: '예산을 아낄 수 있어요', m: '1년쯤 걸려 70~95%만 회복돼요' },
+    ] },
+  regen: { e: '🏘️', k: '구도심 재생', t: '낡은 골목, 어떻게 바꿀까요?',
+    b: '와와마을 골목 주택이 많이 낡았어요. 개발업체는 전면 재개발을 제안하고, 주민 일부는 동네 모습을 지키며 고쳐 살고 싶어 해요.',
+    o: [
+      { k: 'redevelop', t: '전면 철거 재개발', s: '업체가 기부채납금 2,000만 원을 내요.', p: '예산이 크게 늘어요', m: '1년간 이주·공사 갈등으로 만족이 떨어지고, 동네 문화 지수가 내려가요' },
+      { k: 'community', t: '와와 커뮤니티하우스', s: '빈 땅에 주민 도서관과 돌봄 공간을 함께 지어요. 1,500만 원.', p: '어르신과 아이 있는 집 만족이 오래 올라요', m: '예산이 들어요' },
+    ] },
+  bridge: { e: '🌉', k: '근대문화유산', t: '구 삼호교 안전진단 시기예요',
+    b: '1924년에 놓인 울산 첫 근대식 콘크리트 다리, 구 삼호교. 지금은 걸어서만 건너요. 큰비에 물살이 세지면 교각 아래가 깎일 수 있어요.',
+    o: [
+      { k: 'check', t: '정밀안전진단·보강', s: '전문기관 진단과 교각 보강. 300만 원.', p: '2년 동안 태풍에도 안전해요', m: '예산이 조금 들어요' },
+      { k: 'skip', t: '다음에 하기', s: '올해는 예산을 아껴요.', p: '돈이 들지 않아요', m: '태풍이 오면 다리가 내려앉을 수 있어요. 그러면 3년간 통행이 막혀요' },
+    ] },
+};
+let dilSpeed = 1;
+function openDilemma(id) {
+  const D = DIL[id]; if (!D) return;
+  S.dilPending = id;
+  if (S.speed) dilSpeed = S.speed; setSpeed(0);
+  sheetBody.innerHTML = `<div class="row"><strong style="flex:1;font-size:16px">동장의 선택</strong><span class="dil-k">${D.e} ${D.k}</span></div>
+    <div class="kamibox">${KAMI}<p><b>까미</b>${D.t}</p></div>
+    <p class="dil-b">${D.b}</p>
+    <div class="dil-o">${D.o.map((o, q) => `<button data-dil="${q}"><b>${String.fromCharCode(65 + q)}. ${o.t}</b><small>${o.s}</small><span class="pm"><span class="p">＋ ${o.p}</span><span class="m">－ ${o.m}</span></span></button>`).join('')}</div>
+    <p class="fine">정답은 없어요. 고른 길에 따라 동네가 달라져요. 효과와 비용은 게임용 계산이에요.</p>`;
+  sheetBody.querySelectorAll('[data-dil]').forEach((b) => { b.onclick = () => chooseDilemma(id, D.o[+b.dataset.dil].k); });
+  sheetEl.hidden = false;
+}
+function chooseDilemma(id, k) {
+  const D = DIL[id], o = D.o.find((q) => q.k === k);
+  S.dilPending = null; if (!S.dil) S.dil = {}; S.dil[id] = k; S.dilN = (S.dilN || 0) + 1;
+  if (id === 'crow') { S.crowPlan = k; S.crowYears = k === 'live' ? 1 : 0; }
+  if (id === 'inverter') { S.inv = k; S.invT = mIdx(); S.money -= k === 'aid' ? 1700 : 200; }
+  if (id === 'regen') { S.regen = k; S.regenT = mIdx(); S.money += k === 'redevelop' ? 2000 : -1500; }
+  if (id === 'bridge') { if (k === 'check') { S.bridgeT = mIdx(); S.money -= 300; } S.bridgeAsk = mIdx(); }
+  closeSheet(); setSpeed(dilSpeed || 1);
+  tone(k === D.o[0].k ? 523 : 659, .14, { to: 880, vol: .06, type: 'triangle' });
+  notify(`${D.e} '${o.t}'(으)로 정했어요. ${o.p}.`, 'gold');
+  logEvt(`동장, ${D.k} 문제에 '${o.t}' 결정`, `${o.s} ${o.p}. 다만 ${o.m}.`, 6, 'pol');
+  computeStats(); updateHUD(); checkStamps(); save();
+}
+function bridgeStorm() {
+  if (S.bridgeClosed > 0) return;
+  if (S.bridgeT && mIdx() - S.bridgeT < 24) { notify('🌉 미리 보강해 둔 구 삼호교는 거센 물살에도 끄떡없었어요.', 'gold'); return; }
+  if (Math.random() > .4) return;
+  S.bridgeClosed = 36; const cost = 900; S.money -= cost; S.disCost = (S.disCost || 0) + cost;
+  const msg = `🌉 거센 물살에 구 삼호교 교각 아래가 깎여 상판이 내려앉았어요. 3년간 통행을 막고 복구해요. 응급 복구비 ${won(cost)}.`;
+  notify(msg, 'bad'); logEvt('구 삼호교 상판 침하, 3년간 통행 통제', '안전진단을 미룬 사이 집중호우로 교각 기초가 깎였어요. 근대문화유산 복구에 오랜 시간이 걸려요.', 9, 'dis');
+}
+function storyMonth(m) {
+  const mi = mIdx(); if (!S.start) S.start = mi;
+  if (S.bridgeClosed > 0) { S.bridgeClosed--; if (!S.bridgeClosed) { notify('🌉 구 삼호교 복구가 끝나 다시 걸어서 건널 수 있어요.', 'gold'); logEvt('구 삼호교 복구 완료, 보행 재개', '근대문화유산 다리가 다시 시민 곁으로 돌아왔어요.', 6, 'ms'); } }
+  if (S.crowPlan === 'live' && m === 3) { S.crowYears = (S.crowYears || 1) + 1; }
+  if (S.crowPlan === 'live' && m === 12) logEvt('떼까마귀 "운수대똥" 이벤트 화제', '배설물을 맞은 관광객에게 상품권을 주는 역발상 이벤트에 웃음꽃이 피었어요. 새벽 물청소반 덕분에 골목도 깨끗해요.', 4.5, 'season');
+  if (S.crowPlan === 'drive' && m === 12) logEvt('떼까마귀 떠난 태화강, 겨울 군무 사라져', '민원은 줄었지만 생태관광객 발길도 끊겼어요.', 3, 'season');
+  if (S.inv === 'group' && mi - (S.invT || 0) === 12) notify('☀️ 공동구매 인버터 교체가 거의 끝났어요. 태양광 발전이 다시 늘었어요.', 'gold');
+  if (S.dilPending) { if (sheetEl.hidden) openDilemma(S.dilPending); return; }
+  if (!started || !sheetEl.hidden || !$('menu').hidden) return;
+  const pop = S.pop || 0;
+  if (!S.crowPlan && m === 11 && pop > 200) return openDilemma('crow');
+  if (projOn('solar') && !S.inv && mi - S.proj.solar >= 84) return openDilemma('inverter');
+  if (!S.regen && pop >= 12000 && mi - (S.start || mi) >= 18 && m === 6) return openDilemma('regen');
+  if (m === 3 && !S.bridgeClosed && pop > 500 && mi - (S.bridgeAsk || S.start || mi) >= 24) return openDilemma('bridge');
+}
+function storyHTML() {
+  const bar = (n, v, c, tip) => `<div><span>${n}</span><i><i style="width:${v}%;background:${c}"></i></i><b class="num">${v}</b></div>`;
+  const chosen = Object.keys(S.dil || {}).map((id) => { const D = DIL[id], o = D.o.find((q) => q.k === S.dil[id]); return `<li><span>${D.e} ${D.k}</span><b>${o.t}</b></li>`; }).join('');
+  return `<section class="story"><h4>삼호 이야기 · 동네 지수</h4>
+    <div class="bars2">${bar('환경', envIdx(), '#4fae7d')}${bar('문화', cultIdx(), '#c9962a')}</div>
+    <p class="fine">환경은 대숲·철새·태양광·공장, 문화는 명소·축제·문화유산에 따라 바뀌어요. 높을수록 주민 만족과 관광객이 늘어요.</p>
+    <h4 style="margin-top:12px">삼호 사업 <small>한 번 투자하면 계속 효과가 있어요</small></h4>
+    <div class="pollist">${PROJ.map((p) => { const on = projOn(p.id), ok = !p.need || p.need();
+      return `<button data-proj="${p.id}" class="${on ? 'on' : ''}${!on && !ok ? ' na' : ''}"${on ? ' aria-disabled="true"' : ''}><span class="pi pe">${p.e}</span><span class="pt"><b>${p.name}</b><small>${!on && !ok ? p.needT : p.d}</small><small class="fx">${p.fx}</small></span><span class="pc"><em>${on ? '완료' : won(p.cost)}</em></span></button>`; }).join('')}</div>
+    ${chosen ? `<h4 style="margin-top:12px">동장이 내린 결정</h4><ul class="dil-list">${chosen}</ul>` : ''}
+    ${S.bridgeClosed > 0 ? `<p class="fine" style="color:var(--bad)">구 삼호교 복구 중 · ${S.bridgeClosed}개월 남음</p>` : ''}
+    <button class="btn ghost" id="legendBtn" style="align-self:flex-start">📜 삼호(三呼) 지명 이야기 보기</button></section>`;
+}
+function bindStory(back) {
+  sheetBody.querySelectorAll('[data-proj]').forEach((b) => {
+    b.onclick = () => {
+      const p = PROJ.find((q) => q.id === b.dataset.proj);
+      if (projOn(p.id)) return;
+      if (p.need && !p.need()) { notify(p.needT); return; }
+      if (S.money < p.cost) { notify('예산이 모자라요.', 'bad'); return; }
+      if (!S.proj) S.proj = {};
+      S.money -= p.cost; S.proj[p.id] = mIdx();
+      celebrate(`${p.e} ${p.name}`, p.fx, 8, '삼호 사업 완료');
+      logEvt(`삼호동, '${p.name}' 마무리`, p.d, 5, 'pol');
+      computeStats(); updateHUD(); checkStamps(); save(); back();
+    };
+  });
+  const lb = $('legendBtn'); if (lb) lb.onclick = () => openLegend(back);
+}
+function openLegend(after) {
+  sheetBody.innerHTML = `<div class="legend-story">
+    <small>SAMHO · 三呼</small>
+    <h3>세 번 부른 동네, 삼호</h3>
+    <p>먼 옛날 신라 경순왕이 문수보살을 만나러 이곳을 찾았어요. 길을 안내하던 동자승이 홀연히 사라지자, 왕은 동자승을 <b>세 번 불렀다</b>고 해요. 그래서 이 동네 이름이 <b>삼호(三呼)</b>예요.</p>
+    <p>세 번 탄식한 곳은 <b>삼탄</b>, "헐 수 없다"며 한탄한 정자 터는 <b>헐수정</b>이 되었다고 전해져요.</p>
+    <p>천 년 뒤, 태화강 대숲과 무거천 벚꽃길 사이에 2만 명이 모여 사는 이 동네의 동장으로 당신이 부임했어요. 이번엔 주민들이 동장을 부를 거예요. 세 번이 아니라, 매일매일.</p>
+    <button class="btn primary" id="legendGo">삼호동 둘러보기</button>
+    <p class="fine">지명 유래는 전해 오는 이야기예요.</p></div>`;
+  $('legendGo').onclick = () => { if (after) after(); else { closeSheet(); setSpeed(dilSpeed || 1); } };
+  if (!after) { if (S.speed) dilSpeed = S.speed; setSpeed(0); }
+  sheetEl.hidden = false;
+}
+function openStory() {
+  if (!S.proj) S.proj = {};
+  sheetBody.innerHTML = `<div class="row"><strong style="flex:1;font-size:16px">삼호 이야기</strong><button class="btn" id="sheetClose">닫기</button></div>` + storyHTML();
+  bindStory(openStory);
+  $('sheetClose').onclick = closeSheet;
+  sheetEl.hidden = false;
+}
 
 /* ───────── ② 날씨·재난 (Micropolis·µCity·3d.city 재난 방식) ─────────
    여름엔 장마와 태풍, 겨울엔 가끔 눈. 119안전센터가 멀면 불이 크게 번져요 */
@@ -3763,7 +3972,7 @@ function typhoon() {
     const t = type[i]; if (t === WATER) continue;
     if (!nearWater(i, 2)) continue;
     if (Math.random() < .55) wet.push(i);
-    if (isZone(t) && lvl[i] && Math.random() < (drain ? .07 : .26)) hit.push(i);
+    if (isZone(t) && lvl[i] && Math.random() < (drain ? .07 : .26) * (projOn('reservoir') ? .5 : 1) * (polOn('sandbag') ? .7 : 1)) hit.push(i);
   }
   for (const i of hit) setLevel(i, Math.max(herit[i] ? 1 : 0, lvl[i] - 1));
   const cost = hit.length * 12;
@@ -3774,6 +3983,8 @@ function typhoon() {
     : `태풍 ${nm}이(가) 지나갔어요. ${drain ? '빗물받이를 미리 정비해 둔 덕분에' : '다행히'} 큰 피해는 없었어요.`;
   notify(msg, hit.length ? 'bad' : 'gold');
   logEvt(hit.length ? `태풍 ${nm} 강타, 강변 ${hit.length}곳 침수` : `태풍 ${nm} 무사히 지나가`, msg, hit.length ? 9 : 5, 'dis');
+  if (!projOn('reservoir') && hit.length > 3) logEvt('삼호지하차도 한때 물에 잠겨', '저지대라 물이 빨리 차요. 상류 저류지를 넓히면 피해를 줄일 수 있어요.', 5, 'dis');
+  bridgeStorm();
 }
 function fireRoll() {
   const built = []; for (const i of insideList) if (isZone(type[i]) && lvl[i] >= 2) built.push(i);
@@ -3905,7 +4116,7 @@ function publishNews(m) {
   const helped = S.welfare ? S.welfare.log.filter((e) => e[0] === S.year && e[1] === m && e[3]).length : 0;
   if (helped) items.push({ h: `맞춤형복지팀, 위기가구 ${helped}곳 도와`, b: `나눔천사기금 잔액 ${won(S.welfare.fund)}. 이웃의 관심이 위기가구를 찾는 첫걸음이에요.`, w: 3 + helped, k: 'wel' });
   if (m === 4) items.push({ h: '무거천 궁거랑 벚꽃 만개', b: polOn('festival') ? '궁거랑 낭만축제에 상춘객이 몰려 골목 가게가 붐볐어요.' : '축제를 열면 관광 수입이 더 늘어요.', w: polOn('festival') ? 5 : 2, k: 'season' });
-  if ((m === 11 || m === 12) && countServ('tower')) items.push({ h: '태화강 떼까마귀 군무, 전망대 인기', b: '해 질 녘 수만 마리가 강 위를 수놓아요.', w: 2, k: 'season' });
+  if ((m === 11 || m === 12) && countServ('tower') && S.crowPlan !== 'drive') items.push({ h: '태화강 떼까마귀 군무, 전망대 인기', b: '해 질 녘 수만 마리가 강 위를 수놓아요.', w: 2, k: 'season' });
   if (S.money < 0) items.push({ h: '삼호동 예산 바닥… 시책 조정 불가피', b: '세율이나 시책 비용을 살펴봐야 해요.', w: 6, k: 'money' });
   items.sort((a, b) => b.w - a.w);
   { const per = {}, keep = []; for (const it of items) { per[it.k] = (per[it.k] || 0) + 1; if (per[it.k] <= 2) keep.push(it); } items.length = 0; items.push(...keep); }
@@ -3986,7 +4197,7 @@ function monthEnd() {
   }
   const m = S.month, crowSeason = m >= 11 || m <= 2, hasTower = countServ('tower') > 0;
   const taxIn = S.tax / 100 * (S.pop * 3.6 + S.jobsC * 5 + S.jobsI * 4.5);
-  let tour = hasTower ? (crowSeason ? 260 : 60) : 0;
+  let tour = hasTower ? (crowSeason ? (S.crowPlan === 'drive' ? 40 : 260) : 60) : 0; S.parkN = parks;
   if (m === 4) tour += Math.min(400, 120 + S.goods * 3);
   if (countServ('museum')) tour += 90;
   if (countServ('stadium') && m >= 3 && m <= 11) tour += 180; // 프로축구 시즌
@@ -3994,10 +4205,11 @@ function monthEnd() {
   if (countServ('ferris')) tour += m === 4 ? 200 : 120;
   const admin = S.pop * .1, roadC = roads * .06 + aves * .14, parkC = parks * .1;
   if (polOn('festival') && m === 4) tour += 250 + Math.min(350, S.goods * 6);
-  const polC = polCost(), dis = S.disCost || 0; S.disCost = 0;
-  const net = taxIn + tour - admin - roadC - parkC - serv - polC;
+  tour += storyTour(m);
+  const polC = polCost(), stC = storyCost(m), dis = S.disCost || 0; S.disCost = 0;
+  const net = taxIn + tour - admin - roadC - parkC - serv - polC - stC;
   S.money += net; S.lastNet = net - dis;
-  S.ledger = { taxIn, tour, admin, roadC, parkC, serv, polC, dis, net: net - dis };
+  S.ledger = { taxIn, tour, admin, roadC, parkC, serv, polC, stC, dis, net: net - dis };
 
   let wsum = 0, wel = 0, saf = 0, edu = 0, hea = 0, cg = 0;
   for (const i of insideList) {
@@ -4006,7 +4218,7 @@ function monthEnd() {
     wel += COV.welfare[i] * w; saf += COV.safety[i] * w; edu += COV.edu[i] * w; hea += COV.health[i] * w;
     const r = nearRoad[i]; cg += (r >= 0 ? Math.max(0, cong[r] - .8) : .5) * w * (polOn('parking') ? .8 : 1);
   }
-  if (wsum > 0) S.happy = clamp(48 + 16 * wel / wsum + 10 * saf / wsum + 8 * edu / wsum + 8 * hea / wsum - 22 * Math.min(1, cg / wsum) - (S.tax - 9) * 3 + Math.min(10, S.goods * .3) + Math.min(6, parks * .08) + (m === 4 ? 2 : 0) - Math.max(0, (S.commute || 0) - 25) * .6 + (S.hh ? (S.hh.reduce((a, h) => a + h.sat * h.share, 0) - 60) * .25 : 0) + polHappy(), 0, 100);
+  if (wsum > 0) S.happy = clamp(48 + 16 * wel / wsum + 10 * saf / wsum + 8 * edu / wsum + 8 * hea / wsum - 22 * Math.min(1, cg / wsum) - (S.tax - 9) * 3 + Math.min(10, S.goods * .3) + Math.min(6, parks * .08) + (m === 4 ? 2 : 0) - Math.max(0, (S.commute || 0) - 25) * .6 + (S.hh ? (S.hh.reduce((a, h) => a + h.sat * h.share, 0) - 60) * .25 : 0) + polHappy() + storyHappy(), 0, 100);
 
   computeHouseholds();
   welMonth();
@@ -4039,6 +4251,7 @@ function monthEnd() {
   if (m === 4 && polOn('festival')) S.festYear = S.year;
   if (m === 4 && polOn('festival')) celebrate('궁거랑 낭만축제', '벚꽃 아래 축제가 열렸어요. 관광 수입과 가게 매출이 올랐어요.', 14, '4월의 삼호동');
   disasterMonth();
+  storyMonth(m);
   advise();
   if (S.money < 0 && net < 0) notify('예산이 바닥났어요. 세율을 올리거나 시설을 줄여 보세요.', 'bad');
   if (overlay >= 2) groundAll = true;
@@ -4440,7 +4653,7 @@ let riverC = { x: W * .75, z: H * .25 };
 (function () { let sx = 0, sz = 0, n = 0; for (let i = 0; i < N; i++) if (waterT[i] && i % W > W * .45) { sx += i % W; sz += (i / W) | 0; n++; } if (n) riverC = { x: sx / n, z: sz / n }; })();
 const birds = []; for (let k = 0; k < 180; k++) birds.push({ a: Math.random() * 6.28, r: 3 + Math.random() * 9, h: 4 + Math.random() * 3, s: .5 + Math.random() * .5, ph: Math.random() * 6.28 });
 function stepBirds(t, hour) {
-  const m = S.month, crow = (m >= 11 || m <= 2) && hour > 16.5 && hour < 19.5, heron = m >= 4 && m <= 9 && hour > 6 && hour < 10;
+  const m = S.month, crow = S.crowPlan !== 'drive' && (m >= 11 || m <= 2) && hour > 16.5 && hour < 19.5, heron = m >= 4 && m <= 9 && hour > 6 && hour < 10;
   if (!crow && !heron) { birdMesh.count = 0; return; }
   birdMat.color.setHex(crow ? 0x202227 : 0xf7f7f2);
   const cnt = crow ? 180 : 40, s = t / 1000, cx = riverC.x + Math.sin(s * .11) * 8, cz = riverC.z + Math.cos(s * .07) * 4;
@@ -4811,16 +5024,16 @@ function renderSheet() {
   }).join('')}</div></section>`;
   sheetBody.innerHTML = `<div class="row"><strong style="flex:1;font-size:16px">모든 도구</strong><button class="btn" id="sheetClose">닫기</button></div>` +
     sec('도로·교통', GROUP.road) + sec('구역·공원', ['rz', 'cz', 'iz', 'park']) + sec('공공시설', GROUP.pub) + sec('대형 편의시설', GROUP.big) + sec('금융', GROUP.fin) + sec('명소', GROUP.lm) +
-    `<section><h4>동장실</h4><div class="tgrid"><button data-act="menu">${svg('hall')}<span class="nm">예산·통계</span><span class="ct">세율·목표</span></button><button data-act="layer">${svg('park')}<span class="nm">지도 보기</span><span class="ct">교통·땅값</span></button><button data-act="look">${svg('look')}<span class="nm">둘러보기</span><span class="ct"></span></button><button data-act="doze">${svg('doze')}<span class="nm">철거</span><span class="ct"></span></button></div></section>`;
+    `<section><h4>동장실</h4><div class="tgrid"><button data-act="menu">${svg('hall')}<span class="nm">예산·통계</span><span class="ct">세율·목표</span></button><button data-act="story">${svg('museum')}<span class="nm">삼호 이야기</span><span class="ct">지수·사업</span></button><button data-act="layer">${svg('park')}<span class="nm">지도 보기</span><span class="ct">교통·땅값</span></button><button data-act="look">${svg('look')}<span class="nm">둘러보기</span><span class="ct"></span></button><button data-act="doze">${svg('doze')}<span class="nm">철거</span><span class="ct"></span></button></div></section>`;
   sheetBody.querySelectorAll('[data-t]').forEach((b) => { b.onclick = () => { pickTool(b.dataset.t); closeSheet(); }; });
   sheetBody.querySelectorAll('[data-act]').forEach((b) => {
-    b.onclick = () => { const a = b.dataset.act; closeSheet(); if (a === 'menu') openMenu(); else if (a === 'layer') cycleOverlay(); else pickTool(a); };
+    b.onclick = () => { const a = b.dataset.act; closeSheet(); if (a === 'menu') openMenu(); else if (a === 'story') openStory(); else if (a === 'layer') cycleOverlay(); else pickTool(a); };
   });
   $('sheetClose').onclick = closeSheet;
 }
 function openSheet() { renderSheet(); sheetEl.hidden = false; }
 function closeSheet() { sheetEl.hidden = true; }
-sheetEl.addEventListener('pointerdown', (e) => { if (e.target === sheetEl) closeSheet(); });
+sheetEl.addEventListener('pointerdown', (e) => { if (e.target === sheetEl && !S.dilPending) closeSheet(); });
 function setTool(id) {
   tool = T[id]; clearPlan(); clearPending();
   if (id !== 'look') closeCard();
@@ -4866,7 +5079,7 @@ $('btnMenu').onclick = openMenu;
 function openMenu() {
   $('menu').hidden = false; $('tax').value = S.tax; $('taxv').textContent = S.tax + '%';
   const u = S.ledger;
-  $('ledger').innerHTML = u ? [['세금', u.taxIn], ['관광', u.tour], ['주민 행정', -u.admin], ['도로 유지', -u.roadC], ['공공시설', -u.serv], ['공원', -u.parkC], ['동 시책', -(u.polC || 0)], ['재난 복구', -(u.dis || 0)]]
+  $('ledger').innerHTML = u ? [['세금', u.taxIn], ['관광', u.tour], ['주민 행정', -u.admin], ['도로 유지', -u.roadC], ['공공시설', -u.serv], ['공원', -u.parkC], ['동 시책', -(u.polC || 0)], ['삼호 사업 관리', -(u.stC || 0)], ['재난 복구', -(u.dis || 0)]]
     .filter((r) => Math.round(r[1]) !== 0).map((r) => `<dt>${r[0]}</dt><dd>${r[1] > 0 ? '+' : ''}${won(r[1])}</dd>`).join('') + `<dt class="sum">지난달 합계</dt><dd class="sum">${u.net >= 0 ? '+' : ''}${won(u.net)}</dd>` +
     `<dt>일자리</dt><dd>상업 ${fmt(S.jobsC)} · 공업 ${fmt(S.jobsI)} · 공공 ${fmt(S.jobsS)}</dd>` +
     (S.pop > 30 ? `<dt>일자리 충족률</dt><dd>${Math.round(S.emp * 100)}% <small style="opacity:.6">일할 사람 ${fmt(Math.round(S.workers))} · 동 밖 출근 ${fmt(Math.round(S.extJobs))}</small></dd>` : '')
@@ -5097,7 +5310,9 @@ function newGame(mode) {
   setTimeout(() => notify(mode === 'empty' ? '도로 도구로 큰길에서 이어지는 길을 깔아 보세요. 손가락으로 끌면 길이 그려져요.'
     : mode === 'village' ? '아파트와 큰 상가 자리가 비었어요. 골목 마을 옆 빈 땅에 새 동네를 지어 보세요.'
     : `지금의 삼호동이에요. 인구 ${fmt(S.pop)}명. 남쪽에 빈 땅이 넓게 남아 있어요.`), 400);
+  S.start = mIdx();
   checkMissions(); updateHUD(); save();
+  if (!window['__SAMHO_' + 'TEST']) setTimeout(() => { if (sheetEl.hidden) openLegend(); }, 2600);
 }
 function begin() {
   $('start').hidden = true; started = true; setSpeed(1); hour = 9.5;
